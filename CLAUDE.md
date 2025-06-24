@@ -206,6 +206,56 @@ Closes #issue-number
 - `perf`: Performance improvements
 - `ci`: CI/CD configuration changes
 
+### GitHub Issues Workflow
+
+**Context**: Starting work on next assigned GitHub issue in amysoft.tech repository following established Nx monorepo workflow procedures.
+
+**Objective**: Pull next assigned issue and begin implementation following the project's standard development workflow.
+
+**Workflow Steps to Execute**:
+
+1. **Retrieve Next Issue**:
+   ```bash
+   gh issue list --assignee @me --state open --limit 1
+   ```
+
+2. **Get Issue Details**:
+   ```bash
+   gh issue view [ISSUE_NUMBER] --comments
+   ```
+
+3. **Create Feature Branch**:
+   - Branch naming: `feature/[descriptive-name-based-on-issue]`
+   - Use kebab-case following project conventions
+   ```bash
+   git checkout -b feature/[branch-name]
+   git push -u origin feature/[branch-name]
+   ```
+
+4. **Update Issue Status**:
+   ```bash
+   gh issue comment [ISSUE_NUMBER] --body "Starting implementation. Created feature branch: feature/[branch-name]"
+   ```
+
+5. **Begin Implementation**:
+   - Follow CLAUDE.md development standards (kebab-case naming, TypeScript strict mode, Angular best practices)
+   - Use TodoWrite tool to track implementation tasks if complex
+   - Ensure code quality standards and Nx workspace conventions
+   - Target appropriate application: website (marketing), pwa (learning platform), api (backend), or admin (console)
+
+6. **Track Progress with Commits**:
+   - Use conventional commit format: `type(scope): description`
+   - Reference issue number in commits
+   - Include "Closes #[ISSUE_NUMBER]" in final commit
+
+**Project Context**:
+- Repository: amysoft.tech (Beyond the AI Plateau Nx monorepo)
+- Applications: website (Angular), pwa (Ionic), api (NestJS), admin (Angular)
+- Content tiers: foundation ($24.95), advanced, elite
+- Launch target: July 1, 2025
+- Revenue goal: $250K ARR within 12 months
+- Quality standards: Enterprise-grade TypeScript with strict mode
+
 ### Testing Standards
 
 **Unit Testing Requirements:**

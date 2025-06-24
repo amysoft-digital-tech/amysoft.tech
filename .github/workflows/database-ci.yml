@@ -1,0 +1,494 @@
+name: Database CI/CD Pipeline
+
+on:
+  push:
+    paths:
+      - 'apps/api/src/database/**'
+      - 'apps/api/src/migrations/**'
+      - 'apps/api/src/entities/**'
+      - '.github/workflows/database-ci.yml'
+    branches: [main, develop]
+  pull_request:
+    paths:
+      - 'apps/api/src/database/**'
+      - 'apps/api/src/migrations/**'
+      - 'apps/api/src/entities/**'
+      - '.github/workflows/database-ci.yml'
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  migration-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: migration_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate migration syntax
+        run: |
+          echo "Validating migration file syntax..."
+          npx nx run api:db:validate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/migration_test
+
+      - name: Test fresh migration
+        run: |
+          echo "Testing fresh database migration..."
+          npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/migration_test
+
+      - name: Validate database schema
+        run: |
+          echo "Validating database schema after migration..."
+          npx nx run api:db:schema:validate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/migration_test
+
+      - name: Test migration rollback
+        run: |
+          echo "Testing migration rollback functionality..."
+          npx nx run api:db:migrate:down
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/migration_test
+
+      - name: Test re-migration
+        run: |
+          echo "Testing re-migration after rollback..."
+          npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/migration_test
+
+  schema-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: schema_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/schema_test
+
+      - name: Validate entity relationships
+        run: |
+          echo "Validating TypeORM entity relationships..."
+          npx nx run api:db:entities:validate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/schema_test
+
+      - name: Check foreign key constraints
+        run: |
+          echo "Checking foreign key constraints..."
+          npx nx run api:db:constraints:check
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/schema_test
+
+      - name: Validate indexing strategy
+        run: |
+          echo "Validating database indexing strategy..."
+          npx nx run api:db:indexes:analyze
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/schema_test
+
+      - name: Generate schema documentation
+        run: |
+          echo "Generating database schema documentation..."
+          npx nx run api:db:docs:generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/schema_test
+
+      - name: Upload schema documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-schema-docs
+          path: apps/api/database-docs/
+          retention-days: 30
+
+  performance-testing:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: performance_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/performance_test
+
+      - name: Generate performance test data
+        run: |
+          echo "Generating large dataset for performance testing..."
+          npx nx run api:db:seed:performance
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/performance_test
+
+      - name: Run query performance tests
+        run: |
+          echo "Running database query performance tests..."
+          npx nx run api:db:test:performance
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/performance_test
+
+      - name: Analyze slow queries
+        run: |
+          echo "Analyzing potentially slow queries..."
+          npx nx run api:db:analyze:slow-queries
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/performance_test
+
+      - name: Generate performance report
+        run: |
+          echo "## Database Performance Test Results" > db-performance-report.md
+          echo "**Database:** PostgreSQL 15" >> db-performance-report.md
+          echo "**Test Data:** Large production-like dataset" >> db-performance-report.md
+          echo "**Timestamp:** $(date -u)" >> db-performance-report.md
+          echo "" >> db-performance-report.md
+          
+          # Add performance metrics from test results
+          cat apps/api/performance-test-results.txt >> db-performance-report.md
+
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-performance-report
+          path: db-performance-report.md
+          retention-days: 30
+
+  data-integrity-testing:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: integrity_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/integrity_test
+
+      - name: Test data integrity constraints
+        run: |
+          echo "Testing data integrity constraints..."
+          npx nx run api:db:test:integrity
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/integrity_test
+
+      - name: Test business rule validation
+        run: |
+          echo "Testing business rule validation..."
+          npx nx run api:db:test:business-rules
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/integrity_test
+
+      - name: Test transaction isolation
+        run: |
+          echo "Testing transaction isolation and consistency..."
+          npx nx run api:db:test:transactions
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/integrity_test
+
+      - name: Validate data consistency
+        run: |
+          echo "Validating data consistency across related entities..."
+          npx nx run api:db:validate:consistency
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/integrity_test
+
+  backup-recovery-testing:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: backup_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations and seed data
+        run: |
+          npx nx run api:db:migrate
+          npx nx run api:db:seed
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/backup_test
+
+      - name: Create database backup
+        run: |
+          echo "Creating database backup..."
+          pg_dump postgresql://test:test@localhost:5432/backup_test > test-backup.sql
+
+      - name: Test backup integrity
+        run: |
+          echo "Testing backup file integrity..."
+          if [ -s test-backup.sql ]; then
+            echo "✅ Backup file created successfully"
+            echo "Backup size: $(wc -c < test-backup.sql) bytes"
+          else
+            echo "❌ Backup file is empty or missing"
+            exit 1
+          fi
+
+      - name: Test database restoration
+        run: |
+          echo "Testing database restoration from backup..."
+          
+          # Drop and recreate database
+          dropdb --if-exists -h localhost -U test backup_test_restore
+          createdb -h localhost -U test backup_test_restore
+          
+          # Restore from backup
+          psql postgresql://test:test@localhost:5432/backup_test_restore < test-backup.sql
+          
+          # Verify restoration
+          npx nx run api:db:verify:restoration
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/backup_test_restore
+          PGPASSWORD: test
+
+      - name: Upload backup artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-backup-test
+          path: test-backup.sql
+          retention-days: 7
+
+  security-validation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: security_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/security_test
+
+      - name: Test SQL injection prevention
+        run: |
+          echo "Testing SQL injection prevention..."
+          npx nx run api:db:test:sql-injection
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/security_test
+
+      - name: Validate access controls
+        run: |
+          echo "Validating database access controls..."
+          npx nx run api:db:test:access-controls
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/security_test
+
+      - name: Test data encryption
+        run: |
+          echo "Testing sensitive data encryption..."
+          npx nx run api:db:test:encryption
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/security_test
+
+      - name: Audit database permissions
+        run: |
+          echo "Auditing database user permissions..."
+          npx nx run api:db:audit:permissions
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/security_test
+
+  migration-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        postgres_version: ['13', '14', '15', '16']
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres_version }}
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_USER: test
+          POSTGRES_DB: compatibility_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test migration compatibility
+        run: |
+          echo "Testing migration compatibility with PostgreSQL ${{ matrix.postgres_version }}"
+          npx nx run api:db:migrate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/compatibility_test
+
+      - name: Validate functionality
+        run: |
+          echo "Validating database functionality on PostgreSQL ${{ matrix.postgres_version }}"
+          npx nx run api:db:test:compatibility
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/compatibility_test
+
+  notify-results:
+    runs-on: ubuntu-latest
+    needs: [migration-validation, schema-validation, performance-testing, data-integrity-testing, backup-recovery-testing, security-validation]
+    if: always()
+    steps:
+      - name: Notify database CI results
+        run: |
+          if [ "${{ needs.migration-validation.result }}" == "success" ] && 
+             [ "${{ needs.schema-validation.result }}" == "success" ] && 
+             [ "${{ needs.performance-testing.result }}" == "success" ] && 
+             [ "${{ needs.data-integrity-testing.result }}" == "success" ] && 
+             [ "${{ needs.backup-recovery-testing.result }}" == "success" ] && 
+             [ "${{ needs.security-validation.result }}" == "success" ]; then
+            echo "✅ All database tests passed!"
+          else
+            echo "❌ Some database tests failed!"
+            exit 1
+          fi

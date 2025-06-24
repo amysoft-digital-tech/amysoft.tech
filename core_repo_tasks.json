@@ -1,0 +1,519 @@
+{
+  "data": {
+    "type": "project-tasks",
+    "id": "beyond-ai-plateau-core",
+    "attributes": {
+      "project_name": "Beyond the AI Plateau: Five Elite Principles PWA",
+      "organization": "amysoft-digital-tech",
+      "repository": "amysoft.tech",
+      "launch_target": "2025-07-01",
+      "business_goal": "$250K ARR within 12 months",
+      "foundation_price": "$24.95",
+      "completion_status": "85% content complete"
+    },
+    "relationships": {
+      "milestones": {
+        "data": [
+          {
+            "type": "milestone",
+            "id": "phase-1-foundation",
+            "attributes": {
+              "title": "Phase 1: Foundation Content & Nx Setup",
+              "description": "Complete foundation content and establish Nx monorepo architecture",
+              "due_date": "2025-02-28",
+              "weeks": "1-4"
+            }
+          },
+          {
+            "type": "milestone",
+            "id": "phase-2-pwa-development",
+            "attributes": {
+              "title": "Phase 2: PWA Development & Integration",
+              "description": "Build PWA platform with offline capabilities and content delivery",
+              "due_date": "2025-03-31",
+              "weeks": "5-8"
+            }
+          },
+          {
+            "type": "milestone",
+            "id": "phase-3-advanced-content",
+            "attributes": {
+              "title": "Phase 3: Advanced Content & Revenue Enhancement",
+              "description": "Develop tier 2 content and revenue optimization features",
+              "due_date": "2025-04-30",
+              "weeks": "9-12"
+            }
+          },
+          {
+            "type": "milestone",
+            "id": "phase-4-launch-preparation",
+            "attributes": {
+              "title": "Phase 4: Launch Preparation & Go-Live",
+              "description": "Final testing, deployment, and launch readiness",
+              "due_date": "2025-07-01",
+              "weeks": "13-16"
+            }
+          }
+        ]
+      },
+      "labels": {
+        "data": [
+          {"type": "label", "id": "setup", "attributes": {"name": "setup", "color": "#0052CC", "description": "Initial project configuration"}},
+          {"type": "label", "id": "content", "attributes": {"name": "content", "color": "#36B37E", "description": "Content development and management"}},
+          {"type": "label", "id": "frontend", "attributes": {"name": "frontend", "color": "#FF5630", "description": "Frontend development tasks"}},
+          {"type": "label", "id": "backend", "attributes": {"name": "backend", "color": "#6554C0", "description": "Backend API development"}},
+          {"type": "label", "id": "devops", "attributes": {"name": "devops", "color": "#FF8B00", "description": "DevOps and infrastructure"}},
+          {"type": "label", "id": "testing", "attributes": {"name": "testing", "color": "#00B8D9", "description": "Testing and quality assurance"}},
+          {"type": "label", "id": "documentation", "attributes": {"name": "documentation", "color": "#97A0AF", "description": "Documentation and guides"}},
+          {"type": "label", "id": "priority-high", "attributes": {"name": "priority: high", "color": "#DE350B", "description": "High priority task"}},
+          {"type": "label", "id": "priority-medium", "attributes": {"name": "priority: medium", "color": "#FFAB00", "description": "Medium priority task"}},
+          {"type": "label", "id": "priority-low", "attributes": {"name": "priority: low", "color": "#00875A", "description": "Low priority task"}},
+          {"type": "label", "id": "claude-code", "attributes": {"name": "claude-code", "color": "#8B5CF6", "description": "Claude Code optimization task"}},
+          {"type": "label", "id": "revenue", "attributes": {"name": "revenue", "color": "#FFC400", "description": "Revenue generation feature"}}
+        ]
+      },
+      "tasks": {
+        "data": [
+          {
+            "type": "task",
+            "id": "task-001",
+            "attributes": {
+              "title": "Initialize Nx Workspace with Dev Container Configuration",
+              "description": "Create the core Nx monorepo workspace following the hybrid architecture approach. This includes setting up the development container for VS Code with all necessary tools and services.\n\n**Acceptance Criteria:**\n- Nx workspace created with integrated preset\n- Dev container configuration with Node 20, PostgreSQL, Redis\n- VS Code extensions configured for Nx development\n- Docker Compose setup for local development\n- Initial workspace structure with proper TypeScript configuration\n\n**Technical Requirements:**\n- Follow Hybrid Nx + Multi-Repo Architecture specification\n- Include all services: PostgreSQL, Redis, MailHog, Prometheus, Grafana\n- Configure forwarded ports for all development services\n- Set up proper volume mounts for node_modules and Nx cache\n\n**Claude Code Preparation:**\n- Create main workspace CLAUDE.md with Nx context\n- Document workspace structure and key commands\n- Include Claude Code guidelines for Nx development",
+              "story_points": 8,
+              "time_estimate": "6-8 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-1-foundation",
+              "labels": ["setup", "devops", "priority-high", "claude-code"],
+              "dependencies": [],
+              "acceptance_criteria": [
+                "Nx workspace successfully created and configured",
+                "Dev container starts without errors",
+                "All services accessible on configured ports",
+                "VS Code opens workspace in container successfully",
+                "Initial build and test commands execute successfully"
+              ],
+              "technical_notes": [
+                "Use Node 20 LTS for consistency",
+                "Configure Nx Cloud for distributed caching if needed",
+                "Ensure proper user permissions in dev container"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-002",
+            "attributes": {
+              "title": "Generate Core Applications in Nx Workspace",
+              "description": "Create the four core applications using Nx generators: website (Angular), PWA (Ionic Angular), API (NestJS), and admin (Angular).\n\n**Applications to Generate:**\n1. Website - Angular 18+ marketing site with SSR\n2. PWA - Ionic Angular learning platform\n3. API - NestJS backend with PostgreSQL integration\n4. Admin - Angular admin console for content management\n\n**Acceptance Criteria:**\n- All four applications generated successfully\n- Each application serves without errors\n- Basic routing configured for frontend apps\n- API application connects to PostgreSQL\n- Initial health check endpoints created\n\n**Claude Code Preparation:**\n- Create application-specific CLAUDE.md files\n- Document application purposes and dependencies\n- Include development commands for each app",
+              "story_points": 5,
+              "time_estimate": "4-6 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-1-foundation",
+              "labels": ["setup", "frontend", "backend", "priority-high"],
+              "dependencies": ["task-001"],
+              "acceptance_criteria": [
+                "Website application serves on port 4200",
+                "PWA application serves on port 8100",
+                "API application serves on port 3000 with health endpoint",
+                "Admin application serves on port 4201",
+                "All applications pass initial linting and tests"
+              ],
+              "technical_notes": [
+                "Use Angular 18+ standalone components",
+                "Configure Ionic with Angular integration",
+                "Set up NestJS with TypeORM and PostgreSQL",
+                "Enable Angular Universal for website SSR"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-003",
+            "attributes": {
+              "title": "Create Shared Library Architecture",
+              "description": "Establish the shared library structure for the Nx workspace, including UI components, data access, and utility libraries that will be used across applications.\n\n**Libraries to Create:**\n1. @amysoft/shared-ui-components - Reusable UI components\n2. @amysoft/shared-data-access - API interfaces and services\n3. @amysoft/shared-utils - Common utility functions\n4. @amysoft/shared-types - TypeScript type definitions\n\n**Acceptance Criteria:**\n- All shared libraries created as publishable packages\n- Basic components implemented (Button, Card, Input)\n- API client service structure established\n- Type definitions for core domain models\n- Storybook configuration for component documentation\n\n**Claude Code Preparation:**\n- Create library-specific CLAUDE.md files\n- Document component patterns and usage guidelines\n- Include examples for each library type",
+              "story_points": 8,
+              "time_estimate": "8-10 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-1-foundation",
+              "labels": ["setup", "frontend", "priority-high", "claude-code"],
+              "dependencies": ["task-002"],
+              "acceptance_criteria": [
+                "Shared libraries build successfully",
+                "Components render in Storybook",
+                "Type definitions export correctly",
+                "API client connects to backend",
+                "Libraries can be imported in applications"
+              ],
+              "technical_notes": [
+                "Use Angular standalone components for UI library",
+                "Configure Tailwind CSS for styling",
+                "Set up proper barrel exports for clean imports",
+                "Include unit tests for all components"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-004",
+            "attributes": {
+              "title": "Implement Database Schema and API Foundation",
+              "description": "Design and implement the core database schema for the platform, including user management, content structure, payments, and analytics. Create foundational API endpoints.\n\n**Database Schema:**\n- Users (authentication, profiles, subscriptions)\n- Content (chapters, principles, templates)\n- Payments (Stripe integration, transactions)\n- Analytics (user progress, engagement metrics)\n- Admin (content management, user management)\n\n**API Endpoints:**\n- Authentication (register, login, refresh)\n- User management (profile, preferences)\n- Content delivery (chapters, templates)\n- Payment processing (Stripe webhooks)\n- Analytics collection\n\n**Acceptance Criteria:**\n- Database migrations created and executed\n- Core API endpoints implemented with proper validation\n- JWT authentication system working\n- Stripe webhook handling configured\n- API documentation generated with Swagger\n\n**Claude Code Preparation:**\n- Create API feature library CLAUDE.md files\n- Document endpoint patterns and validation rules\n- Include database relationship documentation",
+              "story_points": 13,
+              "time_estimate": "12-16 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-1-foundation",
+              "labels": ["backend", "priority-high", "revenue"],
+              "dependencies": ["task-003"],
+              "acceptance_criteria": [
+                "Database schema created with proper relationships",
+                "All API endpoints return expected responses",
+                "Authentication flow works end-to-end",
+                "Stripe webhook processing handles payment events",
+                "API documentation accessible and complete"
+              ],
+              "technical_notes": [
+                "Use TypeORM with PostgreSQL",
+                "Implement proper error handling and validation",
+                "Set up database seeding for development",
+                "Configure Stripe test mode for development"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-005",
+            "attributes": {
+              "title": "Complete Foundation Content Integration",
+              "description": "Finalize and integrate the foundation tier content (85% complete) into the PWA platform. This includes the Five Elite Principles content, 100+ prompt templates, and interactive elements.\n\n**Content to Complete:**\n- Chapter 1: The Great AI Betrayal (finalize introduction)\n- Chapter 2: Five Elite Principles Framework (complete overview)\n- Chapters 3-7: Integrate 100+ prompt templates\n- Chapter 8: Creating Compound Effects\n- Chapter 9: 12-Week Transformation Roadmap\n\n**Interactive Elements:**\n- Quick win sections for immediate implementation\n- Self-assessment tools with AI maturity scoring\n- Progressive code examples from basic to advanced\n- Case studies with metrics and transformations\n\n**Acceptance Criteria:**\n- All foundation content accessible in PWA\n- Interactive elements functional and engaging\n- Content search and bookmark features working\n- Progress tracking system implemented\n- Offline content caching enabled\n\n**Claude Code Preparation:**\n- Create content management CLAUDE.md files\n- Document content structure and delivery patterns\n- Include template organization guidelines",
+              "story_points": 21,
+              "time_estimate": "20-24 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-1-foundation",
+              "labels": ["content", "frontend", "priority-high", "revenue"],
+              "dependencies": ["task-004"],
+              "acceptance_criteria": [
+                "All 9 chapters accessible and properly formatted",
+                "100+ prompt templates organized and searchable",
+                "Interactive quick wins functional",
+                "Self-assessment tools calculate scores correctly",
+                "Content syncs across devices"
+              ],
+              "technical_notes": [
+                "Use Markdown for content with frontmatter metadata",
+                "Implement content versioning for updates",
+                "Optimize images and media for mobile devices",
+                "Create content API for dynamic delivery"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-006",
+            "attributes": {
+              "title": "Develop PWA Core Features and Offline Capabilities",
+              "description": "Build the Progressive Web App core functionality including offline reading, bookmark system, progress tracking, and cross-device synchronization.\n\n**PWA Features:**\n- Service worker for offline content caching\n- Install prompt and app-like experience\n- Push notifications for engagement\n- Background sync for progress tracking\n- Responsive design for all devices\n\n**Learning Platform Features:**\n- Chapter navigation with progress indicators\n- Bookmark and note-taking system\n- Template library with copy functionality\n- Search across all content\n- Personal dashboard with learning analytics\n\n**Acceptance Criteria:**\n- PWA installs successfully on mobile and desktop\n- Content accessible offline after initial load\n- Progress syncs when connection restored\n- Bookmarks and notes persist across sessions\n- Template copying works with proper formatting\n\n**Claude Code Preparation:**\n- Create PWA feature library CLAUDE.md files\n- Document offline patterns and sync strategies\n- Include PWA optimization guidelines",
+              "story_points": 21,
+              "time_estimate": "18-22 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-2-pwa-development",
+              "labels": ["frontend", "priority-high", "claude-code"],
+              "dependencies": ["task-005"],
+              "acceptance_criteria": [
+                "PWA passes Lighthouse PWA audit",
+                "Content loads and functions offline",
+                "Install banner appears appropriately",
+                "Push notifications send successfully",
+                "All user data persists correctly"
+              ],
+              "technical_notes": [
+                "Use Ionic Angular for native-like experience",
+                "Implement proper service worker caching strategies",
+                "Configure push notification service",
+                "Optimize bundle size for mobile networks"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-007",
+            "attributes": {
+              "title": "Build Marketing Website with SEO Optimization",
+              "description": "Develop the marketing website for ebook sales, lead generation, and blog content. Focus on conversion optimization and search engine visibility.\n\n**Website Features:**\n- Landing page with value proposition\n- Pricing and purchase flow\n- Blog for content marketing\n- About and contact pages\n- Lead magnets and email capture\n\n**SEO Optimization:**\n- Angular Universal for server-side rendering\n- Structured data markup\n- Meta tags and Open Graph optimization\n- Sitemap and robots.txt generation\n- Core Web Vitals optimization\n\n**Conversion Features:**\n- Stripe payment integration\n- Coupon code system\n- Social proof and testimonials\n- Mobile-optimized checkout\n- Analytics and conversion tracking\n\n**Acceptance Criteria:**\n- Website loads quickly with good Core Web Vitals\n- Purchase flow completes successfully\n- SEO elements properly implemented\n- Mobile experience optimized\n- Analytics tracking all key events\n\n**Claude Code Preparation:**\n- Create website feature library CLAUDE.md files\n- Document SEO patterns and optimization strategies\n- Include conversion tracking guidelines",
+              "story_points": 13,
+              "time_estimate": "12-16 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-2-pwa-development",
+              "labels": ["frontend", "priority-high", "revenue"],
+              "dependencies": ["task-004"],
+              "acceptance_criteria": [
+                "Website achieves 90+ Lighthouse performance score",
+                "Purchase flow converts test transactions",
+                "SEO meta tags validate correctly",
+                "Mobile experience passes usability testing",
+                "Conversion tracking captures all events"
+              ],
+              "technical_notes": [
+                "Use Angular Universal with proper hydration",
+                "Implement lazy loading for optimal performance",
+                "Configure Google Analytics 4 and conversion tracking",
+                "Set up A/B testing framework for conversion optimization"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-008",
+            "attributes": {
+              "title": "Create Admin Dashboard for Content Management",
+              "description": "Build the admin console for managing content, users, analytics, and business operations. Include role-based access control and comprehensive reporting.\n\n**Admin Features:**\n- Content management (create, edit, publish)\n- User management and subscription tracking\n- Sales analytics and revenue reporting\n- Email campaign management\n- System health monitoring\n\n**Role-Based Access:**\n- Super admin (full access)\n- Content manager (content only)\n- Customer support (user management)\n- Analyst (read-only analytics)\n\n**Analytics Dashboard:**\n- Revenue tracking and projections\n- User engagement metrics\n- Content performance analytics\n- Conversion funnel analysis\n- Retention and churn analysis\n\n**Acceptance Criteria:**\n- All admin functions working correctly\n- Role-based permissions enforced\n- Analytics display accurate data\n- Content updates reflect immediately\n- Export functionality for all reports\n\n**Claude Code Preparation:**\n- Create admin feature library CLAUDE.md files\n- Document admin patterns and security considerations\n- Include analytics implementation guidelines",
+              "story_points": 13,
+              "time_estimate": "14-18 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-2-pwa-development",
+              "labels": ["frontend", "backend", "priority-medium"],
+              "dependencies": ["task-004"],
+              "acceptance_criteria": [
+                "Admin authentication and authorization working",
+                "Content CRUD operations functional",
+                "User management features complete",
+                "Analytics dashboard displays real data",
+                "Export functions generate correct reports"
+              ],
+              "technical_notes": [
+                "Use Angular with role-based route guards",
+                "Implement rich text editor for content management",
+                "Configure charting library for analytics visualization",
+                "Set up proper audit logging for admin actions"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-009",
+            "attributes": {
+              "title": "Implement Comprehensive Testing Strategy",
+              "description": "Establish comprehensive testing across all applications including unit tests, integration tests, e2e tests, and performance testing.\n\n**Testing Strategy:**\n- Unit tests for all components and services (>80% coverage)\n- Integration tests for API endpoints\n- E2E tests for critical user journeys\n- Performance testing for PWA optimization\n- Accessibility testing compliance\n\n**Test Coverage Areas:**\n- Authentication and authorization flows\n- Payment processing and webhooks\n- Content delivery and offline functionality\n- User progress tracking and analytics\n- Cross-browser compatibility\n\n**Testing Tools:**\n- Jest for unit testing\n- Cypress for E2E testing\n- Playwright for cross-browser testing\n- Lighthouse CI for performance\n- axe-core for accessibility\n\n**Acceptance Criteria:**\n- All tests pass in CI/CD pipeline\n- Code coverage above 80% threshold\n- E2E tests cover all critical paths\n- Performance tests meet PWA standards\n- Accessibility tests pass WCAG 2.1 AA\n\n**Claude Code Preparation:**\n- Create testing CLAUDE.md files for each application\n- Document testing patterns and best practices\n- Include test data setup and teardown strategies",
+              "story_points": 13,
+              "time_estimate": "16-20 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-2-pwa-development",
+              "labels": ["testing", "priority-high", "claude-code"],
+              "dependencies": ["task-006", "task-007", "task-008"],
+              "acceptance_criteria": [
+                "Unit test coverage above 80% for all applications",
+                "E2E tests cover purchase flow and content access",
+                "Performance tests validate PWA requirements",
+                "Accessibility tests pass without violations",
+                "All tests run successfully in CI pipeline"
+              ],
+              "technical_notes": [
+                "Configure Nx test runners for parallel execution",
+                "Set up test databases for integration testing",
+                "Implement visual regression testing for UI components",
+                "Configure automated accessibility scanning"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-010",
+            "attributes": {
+              "title": "Develop Advanced Content Module (Tier 2)",
+              "description": "Create the advanced content module for 'The Claude Code Architect' including traditional vs Claude-optimized thinking patterns and technology stack optimization.\n\n**Advanced Content Modules:**\n1. Traditional vs Claude-Optimized Thinking\n2. Development Approach Selection (Tommy's Way vs Conductor's Method)\n3. Technology Stack Optimization\n4. Advanced Context Management\n\n**Content Development:**\n- GraphQL vs REST decision framework\n- Context optimization strategies\n- AI-first architecture patterns\n- Repository-specific Claude.md strategies\n- Cross-session memory optimization\n\n**Interactive Elements:**\n- Architecture decision trees\n- Technology comparison matrices\n- Context optimization tools\n- Advanced template library\n\n**Acceptance Criteria:**\n- All advanced modules accessible to tier 2 users\n- Interactive decision tools functional\n- Advanced templates properly categorized\n- Video content integration working\n- Progress tracking for advanced content\n\n**Claude Code Preparation:**\n- Create advanced content CLAUDE.md files\n- Document architectural patterns and decision frameworks\n- Include advanced Claude Code optimization strategies",
+              "story_points": 21,
+              "time_estimate": "24-30 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-3-advanced-content",
+              "labels": ["content", "frontend", "priority-medium", "revenue", "claude-code"],
+              "dependencies": ["task-006"],
+              "acceptance_criteria": [
+                "Advanced content modules render correctly",
+                "Decision trees guide users through choices",
+                "Technology comparisons display accurate data",
+                "Advanced templates copy with proper formatting",
+                "Video content streams without buffering"
+              ],
+              "technical_notes": [
+                "Use dynamic content loading for advanced modules",
+                "Implement video streaming optimization",
+                "Create interactive decision tree components",
+                "Set up content versioning for advanced materials"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-011",
+            "attributes": {
+              "title": "Implement Revenue Optimization Features",
+              "description": "Build features to maximize revenue including upsell prompts, bundle pricing, referral system, and conversion optimization tools.\n\n**Revenue Features:**\n- Dynamic upsell prompts based on user behavior\n- Bundle pricing for multiple tiers\n- Referral and affiliate tracking system\n- Limited-time offers and countdown timers\n- Exit-intent capture with special offers\n\n**Conversion Optimization:**\n- A/B testing framework for pricing pages\n- Personalized content recommendations\n- Progress-based upselling\n- Social proof and testimonial displays\n- Cart abandonment email sequences\n\n**Analytics Integration:**\n- Revenue attribution tracking\n- Customer lifetime value calculation\n- Conversion funnel optimization\n- Cohort analysis for retention\n- Predictive analytics for churn prevention\n\n**Acceptance Criteria:**\n- Upsell prompts appear at optimal moments\n- Bundle pricing calculates correctly\n- Referral tracking attributes commissions properly\n- A/B tests split traffic accurately\n- Revenue analytics provide actionable insights\n\n**Claude Code Preparation:**\n- Create revenue optimization CLAUDE.md files\n- Document conversion patterns and testing strategies\n- Include analytics implementation guidelines",
+              "story_points": 13,
+              "time_estimate": "16-20 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-3-advanced-content",
+              "labels": ["frontend", "backend", "revenue", "priority-high"],
+              "dependencies": ["task-007"],
+              "acceptance_criteria": [
+                "Upsell conversion rate above 15%",
+                "Bundle sales constitute 30% of revenue",
+                "Referral system tracks attributions correctly",
+                "A/B tests show statistical significance",
+                "Revenue per visitor increases measurably"
+              ],
+              "technical_notes": [
+                "Implement behavioral tracking for upsell timing",
+                "Use machine learning for personalization",
+                "Configure real-time analytics dashboards",
+                "Set up automated email marketing sequences"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-012",
+            "attributes": {
+              "title": "Setup Production Infrastructure and Deployment Pipeline",
+              "description": "Configure production infrastructure on VPS without third-party cloud services, including Docker deployment, reverse proxy, monitoring, and CI/CD pipeline.\n\n**Infrastructure Components:**\n- Docker containers for all applications\n- Nginx reverse proxy with SSL termination\n- PostgreSQL with automated backups\n- Redis for caching and sessions\n- Monitoring with Prometheus and Grafana\n\n**Deployment Pipeline:**\n- GitHub Actions for CI/CD\n- Automated testing and security scanning\n- Blue-green deployment strategy\n- Database migration automation\n- Environment-specific configurations\n\n**Monitoring and Alerts:**\n- Application performance monitoring\n- Error tracking and alerting\n- Resource utilization dashboards\n- Uptime monitoring and alerts\n- Security scanning and compliance\n\n**Acceptance Criteria:**\n- All applications deploy successfully to production\n- SSL certificates auto-renew properly\n- Monitoring dashboards show accurate metrics\n- Deployment pipeline completes without manual intervention\n- Backup and restore procedures verified\n\n**Claude Code Preparation:**\n- Create infrastructure CLAUDE.md files\n- Document deployment procedures and troubleshooting\n- Include monitoring and alerting configurations",
+              "story_points": 13,
+              "time_estimate": "18-24 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-4-launch-preparation",
+              "labels": ["devops", "priority-high"],
+              "dependencies": ["task-009"],
+              "acceptance_criteria": [
+                "Production environment stable and performant",
+                "Deployment pipeline achieves 99%+ success rate",
+                "Monitoring alerts fire appropriately",
+                "Backup restoration completes successfully",
+                "Security scans pass all requirements"
+              ],
+              "technical_notes": [
+                "Use Docker Compose for production orchestration",
+                "Configure Let's Encrypt for SSL automation",
+                "Implement proper secrets management",
+                "Set up log aggregation and rotation"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-013",
+            "attributes": {
+              "title": "Conduct Performance Optimization and Security Hardening",
+              "description": "Optimize application performance for mobile and desktop users, implement security best practices, and ensure compliance with data protection regulations.\n\n**Performance Optimization:**\n- Bundle size optimization and code splitting\n- Image optimization and lazy loading\n- Database query optimization\n- CDN implementation for static assets\n- Service worker caching strategies\n\n**Security Hardening:**\n- OWASP security compliance\n- Input validation and sanitization\n- Rate limiting and DDoS protection\n- Security headers implementation\n- Vulnerability scanning and remediation\n\n**Data Protection Compliance:**\n- GDPR compliance for EU users\n- CCPA compliance for California users\n- Privacy policy and terms of service\n- Cookie consent management\n- Data retention and deletion policies\n\n**Acceptance Criteria:**\n- Lighthouse scores above 90 for all metrics\n- Security audit passes with zero critical issues\n- Page load times under 2 seconds\n- GDPR compliance verified by legal review\n- Performance monitoring shows consistent metrics\n\n**Claude Code Preparation:**\n- Create performance optimization CLAUDE.md files\n- Document security patterns and compliance requirements\n- Include monitoring and alerting best practices",
+              "story_points": 8,
+              "time_estimate": "12-16 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-4-launch-preparation",
+              "labels": ["devops", "testing", "priority-high"],
+              "dependencies": ["task-012"],
+              "acceptance_criteria": [
+                "All Lighthouse audits score above 90",
+                "Security scan reports zero critical vulnerabilities",
+                "GDPR compliance documentation complete",
+                "Performance benchmarks meet targets",
+                "Security headers properly configured"
+              ],
+              "technical_notes": [
+                "Use web-vitals library for performance monitoring",
+                "Implement Content Security Policy headers",
+                "Configure HTTPS everywhere with HSTS",
+                "Set up automated security scanning"
+              ]
+            }
+          },
+          {
+            "type": "task",
+            "id": "task-014",
+            "attributes": {
+              "title": "Execute Launch Preparation and Go-Live Activities",
+              "description": "Complete final testing, content review, marketing preparation, and go-live procedures for the July 1, 2025 launch target.\n\n**Launch Preparation:**\n- User acceptance testing with beta users\n- Final content review and proofreading\n- Marketing materials and campaign setup\n- Customer support documentation\n- Launch day monitoring and response plan\n\n**Go-Live Activities:**\n- DNS cutover to production environment\n- Payment processing verification\n- Email system configuration\n- Analytics and tracking validation\n- Performance monitoring activation\n\n**Post-Launch Support:**\n- 24/7 monitoring for first 72 hours\n- Customer support team training\n- Bug triage and hotfix procedures\n- Marketing campaign execution\n- Success metrics tracking\n\n**Acceptance Criteria:**\n- Beta testing feedback incorporated successfully\n- All marketing campaigns ready for launch\n- Customer support team trained and ready\n- Launch day checklist completed successfully\n- Success metrics baseline established\n\n**Claude Code Preparation:**\n- Create launch procedures CLAUDE.md files\n- Document post-launch monitoring and support procedures\n- Include troubleshooting guides for common issues",
+              "story_points": 8,
+              "time_estimate": "10-14 hours",
+              "assignee": null,
+              "created_at": "2025-01-28T00:00:00Z",
+              "updated_at": "2025-01-28T00:00:00Z",
+              "milestone": "phase-4-launch-preparation",
+              "labels": ["testing", "documentation", "priority-high"],
+              "dependencies": ["task-013"],
+              "acceptance_criteria": [
+                "Beta testing reveals no critical issues",
+                "Marketing campaigns schedule successfully",
+                "Customer support responds within SLA",
+                "Launch day proceeds without major incidents",
+                "Success metrics tracking functions correctly"
+              ],
+              "technical_notes": [
+                "Prepare rollback procedures for emergency situations",
+                "Configure comprehensive logging for launch day",
+                "Set up real-time alerting for critical metrics",
+                "Create communication channels for launch coordination"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "meta": {
+    "total_tasks": 14,
+    "total_story_points": 175,
+    "estimated_duration": "16 weeks",
+    "critical_path": ["task-001", "task-002", "task-003", "task-004", "task-005", "task-006", "task-009", "task-012", "task-013", "task-014"],
+    "kanban_configuration": {
+      "columns": [
+        {"name": "Backlog", "limit": null},
+        {"name": "Ready", "limit": 3},
+        {"name": "In Progress", "limit": 2},
+        {"name": "In Review", "limit": 3},
+        {"name": "Testing", "limit": 2},
+        {"name": "Done", "limit": null}
+      ],
+      "automation_rules": [
+        {"trigger": "PR opened", "action": "Move to In Review"},
+        {"trigger": "PR merged", "action": "Move to Testing"},
+        {"trigger": "All tests pass", "action": "Move to Done"}
+      ]
+    },
+    "team_recommendations": {
+      "full_stack_developer": 1,
+      "content_specialist": 1,
+      "devops_engineer": 0.5,
+      "qa_engineer": 0.5
+    },
+    "risk_mitigation": [
+      "Content completion dependency managed through parallel development tracks",
+      "Claude Code optimization integrated throughout development process",
+      "Revenue features prioritized for early market validation",
+      "Performance and security testing integrated into development workflow"
+    ]
+  }
+}

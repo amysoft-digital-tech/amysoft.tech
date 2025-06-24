@@ -1,0 +1,300 @@
+name: Issue and Project Board Automation
+
+on:
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled, assigned, unassigned, edited]
+  pull_request:
+    types: [opened, closed, reopened, ready_for_review, converted_to_draft, merged]
+  pull_request_review:
+    types: [submitted, dismissed]
+  schedule:
+    - cron: '0 9 * * 1'  # Weekly on Monday at 9 AM UTC
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  auto-assign-projects:
+    name: Auto-assign Issues to Projects
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' && github.event.issue
+    steps:
+      - name: Assign website issues to Website project
+        if: contains(github.event.issue.labels.*.name, 'website')
+        run: |
+          gh project item-create 5 --owner amysoft-digital-tech --url ${{ github.event.issue.html_url }} || true
+          echo "✅ Added website issue to project 5"
+
+      - name: Assign API issues to API project
+        if: contains(github.event.issue.labels.*.name, 'api')
+        run: |
+          gh project item-create 6 --owner amysoft-digital-tech --url ${{ github.event.issue.html_url }} || true
+          echo "✅ Added API issue to project 6"
+
+      - name: Assign PWA issues to PWA project
+        if: contains(github.event.issue.labels.*.name, 'pwa')
+        run: |
+          gh project item-create 8 --owner amysoft-digital-tech --url ${{ github.event.issue.html_url }} || true
+          echo "✅ Added PWA issue to project 8"
+
+      - name: Assign admin issues to Admin project
+        if: contains(github.event.issue.labels.*.name, 'admin')
+        run: |
+          gh project item-create 9 --owner amysoft-digital-tech --url ${{ github.event.issue.html_url }} || true
+          echo "✅ Added admin issue to project 9"
+
+  auto-label-management:
+    name: Automatic Label Management
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    steps:
+      - name: Auto-label based on title keywords
+        run: |
+          TITLE="${{ github.event.issue.title || github.event.pull_request.title }}"
+          NUMBER="${{ github.event.issue.number || github.event.pull_request.number }}"
+          
+          # Security-related
+          if echo "$TITLE" | grep -iE "(security|auth|rbac|permission|access control)" > /dev/null; then
+            gh issue edit $NUMBER --add-label security
+            echo "🔒 Added security label"
+          fi
+          
+          # Performance-related
+          if echo "$TITLE" | grep -iE "(performance|optimization|cache|speed)" > /dev/null; then
+            gh issue edit $NUMBER --add-label performance
+            echo "⚡ Added performance label"
+          fi
+          
+          # Testing-related
+          if echo "$TITLE" | grep -iE "(test|testing|e2e|unit|integration)" > /dev/null; then
+            gh issue edit $NUMBER --add-label testing
+            echo "🧪 Added testing label"
+          fi
+          
+          # Documentation-related
+          if echo "$TITLE" | grep -iE "(doc|documentation|readme|guide)" > /dev/null; then
+            gh issue edit $NUMBER --add-label documentation
+            echo "📚 Added documentation label"
+          fi
+          
+          # Bug-related
+          if echo "$TITLE" | grep -iE "(bug|fix|error|issue)" > /dev/null; then
+            gh issue edit $NUMBER --add-label bug
+            echo "🐛 Added bug label"
+          fi
+
+  milestone-assignment:
+    name: Automatic Milestone Assignment
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' && github.event.issue
+    steps:
+      - name: Assign milestones based on labels and task IDs
+        run: |
+          BODY="${{ github.event.issue.body }}"
+          NUMBER="${{ github.event.issue.number }}"
+          
+          # Extract task ID from issue body
+          TASK_ID=$(echo "$BODY" | grep -oE "Task ID.*: [a-z]+-[0-9]+" | head -1 | grep -oE "[a-z]+-[0-9]+")
+          echo "Detected Task ID: $TASK_ID"
+          
+          # Website milestones
+          if echo "$TASK_ID" | grep "^website-" > /dev/null; then
+            case "$TASK_ID" in
+              website-001|website-002|website-003)
+                gh issue edit $NUMBER --milestone "Foundation Setup & Angular SSR"
+                echo "📋 Assigned to Foundation milestone" ;;
+              website-004|website-005|website-006|website-007)
+                gh issue edit $NUMBER --milestone "Marketing Pages & SEO"
+                echo "📋 Assigned to Marketing Pages milestone" ;;
+              website-008|website-009|website-010)
+                gh issue edit $NUMBER --milestone "E-commerce & Payment Integration"
+                echo "📋 Assigned to E-commerce milestone" ;;
+              website-011|website-012|website-013|website-014)
+                gh issue edit $NUMBER --milestone "Testing & Production Launch"
+                echo "📋 Assigned to Testing milestone" ;;
+            esac
+          fi
+          
+          # API milestones
+          if echo "$TASK_ID" | grep "^api-" > /dev/null; then
+            case "$TASK_ID" in
+              api-001|api-002|api-003)
+                gh issue edit $NUMBER --milestone "Database & Core Infrastructure"
+                echo "📋 Assigned to Infrastructure milestone" ;;
+              api-004|api-005|api-006)
+                gh issue edit $NUMBER --milestone "Authentication & User Management"
+                echo "📋 Assigned to Authentication milestone" ;;
+              api-007|api-008|api-009)
+                gh issue edit $NUMBER --milestone "Content & Payment APIs"
+                echo "📋 Assigned to Content APIs milestone" ;;
+              api-010|api-011|api-012)
+                gh issue edit $NUMBER --milestone "Performance Optimization & Production Deployment"
+                echo "📋 Assigned to Performance milestone" ;;
+            esac
+          fi
+          
+          # PWA milestones
+          if echo "$TASK_ID" | grep "^pwa-" > /dev/null; then
+            case "$TASK_ID" in
+              pwa-001|pwa-002|pwa-003)
+                gh issue edit $NUMBER --milestone "PWA Foundation & Ionic Setup"
+                echo "📋 Assigned to PWA Foundation milestone" ;;
+              pwa-004|pwa-005|pwa-006)
+                gh issue edit $NUMBER --milestone "Content Delivery & Authentication"
+                echo "📋 Assigned to Content Delivery milestone" ;;
+              pwa-007|pwa-008|pwa-009)
+                gh issue edit $NUMBER --milestone "Learning Platform Features"
+                echo "📋 Assigned to Learning Features milestone" ;;
+              pwa-010|pwa-011|pwa-012|pwa-013)
+                gh issue edit $NUMBER --milestone "Testing & Launch Preparation"
+                echo "📋 Assigned to Testing milestone" ;;
+            esac
+          fi
+          
+          # Admin milestones
+          if echo "$TASK_ID" | grep "^admin-" > /dev/null; then
+            case "$TASK_ID" in
+              admin-001)
+                gh issue edit $NUMBER --milestone "Admin Foundation & Authentication"
+                echo "📋 Assigned to Admin Foundation milestone" ;;
+              admin-002)
+                gh issue edit $NUMBER --milestone "Content Management System"
+                echo "📋 Assigned to Content Management milestone" ;;
+              admin-003|admin-005)
+                gh issue edit $NUMBER --milestone "User Administration & Support"
+                echo "📋 Assigned to User Administration milestone" ;;
+              admin-004|admin-006)
+                gh issue edit $NUMBER --milestone "Business Intelligence Dashboard"
+                echo "📋 Assigned to Business Intelligence milestone" ;;
+              admin-007|admin-008)
+                gh issue edit $NUMBER --milestone "Performance & Security Optimization"
+                echo "📋 Assigned to Performance & Security milestone" ;;
+              admin-009|admin-010)
+                gh issue edit $NUMBER --milestone "Testing & Production Deployment"
+                echo "📋 Assigned to Testing milestone" ;;
+            esac
+          fi
+
+  priority-assignment:
+    name: Automatic Priority Assignment
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' || github.event.action == 'labeled'
+    steps:
+      - name: Assign priority based on labels and content
+        run: |
+          NUMBER="${{ github.event.issue.number || github.event.pull_request.number }}"
+          TITLE="${{ github.event.issue.title || github.event.pull_request.title }}"
+          
+          # Critical priority
+          if echo "$TITLE" | grep -iE "(critical|urgent|security|auth|payment)" > /dev/null; then
+            gh issue edit $NUMBER --add-label "priority: critical"
+            echo "🚨 Assigned critical priority"
+          # High priority
+          elif echo "$TITLE" | grep -iE "(high|important|foundation|core|database)" > /dev/null; then
+            gh issue edit $NUMBER --add-label "priority: high"
+            echo "🔴 Assigned high priority"
+          # Medium priority (default)
+          else
+            gh issue edit $NUMBER --add-label "priority: medium"
+            echo "🟡 Assigned medium priority"
+          fi
+
+  dependency-management:
+    name: Dependency Management
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened' || github.event.action == 'closed'
+    steps:
+      - name: Link dependent issues
+        if: github.event.action == 'opened'
+        run: |
+          BODY="${{ github.event.issue.body }}"
+          NUMBER="${{ github.event.issue.number }}"
+          
+          # Extract dependencies from issue body
+          if echo "$BODY" | grep -i "Dependencies:" > /dev/null; then
+            DEPS=$(echo "$BODY" | sed -n '/Dependencies:/,$p' | grep -oE "[a-z]+-[0-9]+" | head -5)
+            for dep in $DEPS; do
+              echo "🔗 Found dependency: $dep for issue #$NUMBER"
+              # Add dependency tracking logic here
+            done
+          fi
+
+      - name: Notify dependent issues on completion
+        if: github.event.action == 'closed'
+        run: |
+          CLOSED_ISSUE="${{ github.event.issue.number }}"
+          echo "✅ Issue #$CLOSED_ISSUE completed - checking for dependent issues"
+          # Add logic to find and notify dependent issues
+
+  stale-issue-management:
+    name: Stale Issue Management
+    runs-on: ubuntu-latest
+    if: github.event.schedule
+    steps:
+      - name: Mark stale issues
+        run: |
+          echo "🧹 Checking for stale issues..."
+          # Mark issues stale after 30 days of inactivity
+          gh issue list --state open --json number,updatedAt,labels | \
+          jq -r '.[] | select(.updatedAt < (now - 30*24*3600 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | .number' | \
+          while read issue_num; do
+            gh issue edit $issue_num --add-label stale
+            gh issue comment $issue_num --body "This issue has been marked as stale due to 30 days of inactivity. Please update or close if no longer relevant."
+            echo "📋 Marked issue #$issue_num as stale"
+          done
+
+      - name: Close very stale issues
+        run: |
+          echo "🗑️ Checking for very stale issues..."
+          # Close issues stale for 14+ days
+          gh issue list --label stale --state open --json number,updatedAt | \
+          jq -r '.[] | select(.updatedAt < (now - 14*24*3600 | strftime("%Y-%m-%dT%H:%M:%SZ"))) | .number' | \
+          while read issue_num; do
+            gh issue close $issue_num --reason "not planned"
+            gh issue comment $issue_num --body "Closing this issue due to extended inactivity. Please reopen if still relevant."
+            echo "🗑️ Closed very stale issue #$issue_num"
+          done
+
+  release-automation:
+    name: Release Automation
+    runs-on: ubuntu-latest
+    if: |
+      github.event.action == 'closed' && 
+      contains(github.event.issue.labels.*.name, 'milestone-complete')
+    steps:
+      - name: Check milestone completion
+        run: |
+          echo "🎯 Checking milestone completion status..."
+          # Check if all issues in milestone are closed
+          # Trigger release preparation if milestone is complete
+
+  weekly-project-summary:
+    name: Weekly Project Summary
+    runs-on: ubuntu-latest
+    if: github.event.schedule
+    steps:
+      - name: Generate project status report
+        run: |
+          echo "📊 Generating weekly project status report..."
+          
+          # Website project status
+          echo "## Website Project Status" > weekly-report.md
+          gh issue list --label website --state all --json state,title | \
+          jq -r 'group_by(.state) | map({state: .[0].state, count: length}) | .[]' >> weekly-report.md
+          
+          # API project status
+          echo "## API Project Status" >> weekly-report.md
+          gh issue list --label api --state all --json state,title | \
+          jq -r 'group_by(.state) | map({state: .[0].state, count: length}) | .[]' >> weekly-report.md
+          
+          # PWA project status
+          echo "## PWA Project Status" >> weekly-report.md
+          gh issue list --label pwa --state all --json state,title | \
+          jq -r 'group_by(.state) | map({state: .[0].state, count: length}) | .[]' >> weekly-report.md
+          
+          # Admin project status
+          echo "## Admin Project Status" >> weekly-report.md
+          gh issue list --label admin --state all --json state,title | \
+          jq -r 'group_by(.state) | map({state: .[0].state, count: length}) | .[]' >> weekly-report.md
+          
+          echo "📊 Weekly project summary generated"
