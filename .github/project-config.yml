@@ -1,0 +1,68 @@
+# GitHub Project Configuration for Beyond the AI Plateau
+
+project:
+  name: "Beyond the AI Plateau: Five Elite Principles PWA"
+  description: "Comprehensive development project for transforming LLM code generation"
+  
+automation_rules:
+  - name: "Move to In Progress"
+    trigger: "issue_assigned"
+    action: "move_to_column"
+    column: "In Progress"
+    
+  - name: "Move to In Review"  
+    trigger: "pull_request_opened"
+    action: "move_to_column"
+    column: "In Review"
+    
+  - name: "Move to Testing"
+    trigger: "pull_request_merged"
+    action: "move_to_column"
+    column: "Testing"
+    
+  - name: "Move to Done"
+    trigger: "issue_closed"
+    action: "move_to_column" 
+    column: "Done"
+
+columns:
+  - name: "Backlog"
+    description: "Tasks waiting to be prioritized"
+    
+  - name: "Ready"
+    description: "Tasks ready to be worked on"
+    limit: 3
+    
+  - name: "In Progress"
+    description: "Tasks currently being worked on"
+    limit: 2
+    
+  - name: "In Review"
+    description: "Tasks under code review"
+    limit: 3
+    
+  - name: "Testing"
+    description: "Tasks being tested"
+    limit: 2
+    
+  - name: "Done"
+    description: "Completed tasks"
+
+team_settings:
+  required_reviewers: 1
+  dismiss_stale_reviews: true
+  require_code_owner_reviews: true
+  required_status_checks:
+    - "CI Pipeline"
+    - "Security Scan"
+    - "Lighthouse CI"
+  
+branch_protection:
+  main:
+    required_status_checks: true
+    enforce_admins: false
+    required_pull_request_reviews:
+      required_approving_review_count: 1
+      dismiss_stale_reviews: true
+      require_code_owner_reviews: true
+    restrictions: null
