@@ -1,0 +1,370 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.login-card-wrapper {
+  width: 100%;
+  max-width: 480px;
+  animation: slideInUp 0.6s ease-out;
+}
+
+.login-card {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+
+  .login-header {
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+    padding: 32px 24px;
+    margin: 0;
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .app-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .app-title {
+        h1 {
+          margin: 0;
+          font-size: 1.75rem;
+          font-weight: 600;
+          color: white;
+        }
+
+        p {
+          margin: 4px 0 0 0;
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 400;
+        }
+      }
+    }
+  }
+
+  .login-content {
+    padding: 32px 24px;
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 32px;
+
+      h2 {
+        margin: 0 0 8px 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-subtitle {
+        margin: 0;
+        color: #666;
+        font-size: 0.875rem;
+      }
+    }
+
+    .full-width {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 24px 0;
+
+      .forgot-password-link {
+        font-size: 0.875rem;
+        text-transform: none;
+        padding: 0;
+        min-width: auto;
+        height: auto;
+        line-height: inherit;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      margin-top: 32px;
+
+      .login-button,
+      .verify-button {
+        flex: 1;
+        height: 48px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: none;
+        border-radius: 8px;
+
+        mat-spinner {
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .login-error {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background-color: #ffebee;
+      border: 1px solid #ffcdd2;
+      border-radius: 8px;
+      color: #c62828;
+      font-size: 0.875rem;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .success-message {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background-color: #e8f5e8;
+      border: 1px solid #c8e6c9;
+      border-radius: 8px;
+      color: #2e7d32;
+      font-size: 0.875rem;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .login-footer {
+    background-color: #f5f5f5;
+    padding: 0;
+
+    .footer-content {
+      padding: 16px 24px;
+      text-align: center;
+
+      p {
+        margin: 0 0 8px 0;
+        color: #666;
+        font-size: 0.75rem;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+
+        a {
+          color: #1976d2;
+          text-decoration: none;
+          font-size: 0.75rem;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: #1565c0;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 576px) {
+  .login-container {
+    padding: 16px;
+  }
+
+  .login-card {
+    .login-header {
+      padding: 24px 20px;
+
+      .logo-section {
+        gap: 12px;
+
+        .app-icon {
+          font-size: 40px;
+          width: 40px;
+          height: 40px;
+        }
+
+        .app-title {
+          h1 {
+            font-size: 1.5rem;
+          }
+
+          p {
+            font-size: 0.8rem;
+          }
+        }
+      }
+    }
+
+    .login-content {
+      padding: 24px 20px;
+
+      .form-header {
+        margin-bottom: 24px;
+
+        h2 {
+          font-size: 1.25rem;
+        }
+      }
+
+      .form-options {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+
+        .forgot-password-link {
+          text-align: center;
+        }
+      }
+
+      .form-actions {
+        flex-direction: column;
+
+        .login-button,
+        .verify-button {
+          width: 100%;
+        }
+      }
+    }
+
+    .login-footer {
+      .footer-content {
+        padding: 12px 20px;
+
+        .footer-links {
+          flex-direction: column;
+          gap: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Animation keyframes
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Focus management for accessibility
+.login-card {
+  button:focus,
+  input:focus,
+  .mat-mdc-checkbox:focus {
+    outline: 3px solid #1976d2;
+    outline-offset: 2px;
+  }
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .login-container {
+    background: linear-gradient(135deg, #2c3e50 0%, #4a6741 100%);
+  }
+
+  .login-card {
+    background: #2d2d2d;
+    color: #e0e0e0;
+
+    .login-content {
+      .form-header {
+        h2 {
+          color: #e0e0e0;
+        }
+
+        .form-subtitle {
+          color: #bbb;
+        }
+      }
+    }
+
+    .login-footer {
+      background-color: #333;
+
+      .footer-content {
+        p {
+          color: #bbb;
+        }
+      }
+    }
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .login-card {
+    border: 2px solid #000;
+
+    .login-header {
+      border-bottom: 2px solid #000;
+    }
+
+    .form-actions {
+      .login-button,
+      .verify-button {
+        border: 2px solid #1976d2;
+      }
+    }
+  }
+}
+
+// Material Design form field customizations
+.login-content {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      border-radius: 8px;
+    }
+
+    &.mat-form-field-invalid {
+      .mat-mdc-text-field-wrapper {
+        border-color: #d32f2f;
+      }
+    }
+  }
+
+  .mat-mdc-raised-button {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+    transition: box-shadow 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.23);
+    }
+
+    &:disabled {
+      box-shadow: none;
+    }
+  }
+}
