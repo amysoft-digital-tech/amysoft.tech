@@ -1,0 +1,505 @@
+{
+  "dashboardConfig": {
+    "title": "Beyond the AI Plateau - Post-Launch Success Metrics",
+    "version": "1.0",
+    "refreshInterval": "30s",
+    "timeRange": {
+      "default": "7d",
+      "options": ["1h", "6h", "24h", "7d", "30d", "90d"]
+    }
+  },
+  "metricCategories": {
+    "business": {
+      "name": "Business Performance",
+      "priority": 1,
+      "metrics": [
+        {
+          "id": "monthly_recurring_revenue",
+          "name": "Monthly Recurring Revenue (MRR)",
+          "target": 20833.33,
+          "unit": "USD",
+          "visualization": "single-stat",
+          "query": "sum(rate(revenue_total[30d]) * 30 * 24 * 3600)",
+          "thresholds": {
+            "green": 15000,
+            "yellow": 10000,
+            "red": 5000
+          }
+        },
+        {
+          "id": "active_subscriptions",
+          "name": "Active Subscriptions",
+          "target": 833,
+          "unit": "count",
+          "visualization": "gauge",
+          "query": "sum(subscription_active_total)",
+          "breakdown": ["tier"]
+        },
+        {
+          "id": "conversion_rate",
+          "name": "Visitor to Subscriber Conversion Rate",
+          "target": 5.0,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "(sum(rate(subscription_purchases_total[24h])) / sum(rate(website_visitors_total[24h]))) * 100"
+        },
+        {
+          "id": "customer_acquisition_cost",
+          "name": "Customer Acquisition Cost (CAC)",
+          "target": 25.0,
+          "unit": "USD",
+          "visualization": "time-series",
+          "query": "sum(marketing_spend_total) / sum(user_registrations_total)",
+          "breakdown": ["channel"]
+        },
+        {
+          "id": "customer_lifetime_value",
+          "name": "Customer Lifetime Value (CLV)",
+          "target": 150.0,
+          "unit": "USD",
+          "visualization": "histogram",
+          "query": "avg(customer_lifetime_value)"
+        }
+      ]
+    },
+    "user_engagement": {
+      "name": "User Engagement & Learning",
+      "priority": 2,
+      "metrics": [
+        {
+          "id": "daily_active_users",
+          "name": "Daily Active Users",
+          "target": 500,
+          "unit": "count",
+          "visualization": "time-series",
+          "query": "count(count by (user_id) (user_sessions_total{timestamp > time() - 24*3600}))"
+        },
+        {
+          "id": "chapter_completion_rate",
+          "name": "Chapter Completion Rate",
+          "target": 75.0,
+          "unit": "percent",
+          "visualization": "bar-chart",
+          "query": "(sum(chapter_completions_total) / sum(chapter_starts_total)) * 100",
+          "breakdown": ["principle", "chapter"]
+        },
+        {
+          "id": "learning_session_duration",
+          "name": "Average Learning Session Duration",
+          "target": 25.0,
+          "unit": "minutes",
+          "visualization": "time-series",
+          "query": "avg(session_duration_seconds{user_tier=\"foundation\"}) / 60"
+        },
+        {
+          "id": "template_usage_rate",
+          "name": "Template Usage per User",
+          "target": 10.0,
+          "unit": "count",
+          "visualization": "time-series",
+          "query": "sum(rate(template_usage_total[7d])) / sum(subscription_active_total)"
+        },
+        {
+          "id": "user_retention_d7",
+          "name": "7-Day User Retention",
+          "target": 60.0,
+          "unit": "percent",
+          "visualization": "cohort-chart",
+          "query": "retention_rate_7d"
+        },
+        {
+          "id": "user_retention_d30",
+          "name": "30-Day User Retention",
+          "target": 40.0,
+          "unit": "percent",
+          "visualization": "cohort-chart",
+          "query": "retention_rate_30d"
+        }
+      ]
+    },
+    "technical_performance": {
+      "name": "Technical Performance",
+      "priority": 3,
+      "metrics": [
+        {
+          "id": "uptime_percentage",
+          "name": "Platform Uptime",
+          "target": 99.9,
+          "unit": "percent",
+          "visualization": "single-stat",
+          "query": "(1 - (sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m])))) * 100"
+        },
+        {
+          "id": "api_response_time_p95",
+          "name": "API Response Time (95th percentile)",
+          "target": 200,
+          "unit": "milliseconds",
+          "visualization": "time-series",
+          "query": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) * 1000"
+        },
+        {
+          "id": "page_load_time_p75",
+          "name": "Page Load Time (75th percentile)",
+          "target": 2.0,
+          "unit": "seconds",
+          "visualization": "time-series",
+          "query": "histogram_quantile(0.75, rate(page_load_time_seconds_bucket[5m]))"
+        },
+        {
+          "id": "pwa_offline_success_rate",
+          "name": "PWA Offline Success Rate",
+          "target": 95.0,
+          "unit": "percent",
+          "visualization": "gauge",
+          "query": "avg(pwa_offline_success_rate)"
+        },
+        {
+          "id": "error_rate",
+          "name": "Error Rate",
+          "target": 0.1,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "(sum(rate(http_requests_total{status=~\"[45]..\"}[5m])) / sum(rate(http_requests_total[5m]))) * 100"
+        }
+      ]
+    },
+    "customer_success": {
+      "name": "Customer Success",
+      "priority": 4,
+      "metrics": [
+        {
+          "id": "net_promoter_score",
+          "name": "Net Promoter Score (NPS)",
+          "target": 50.0,
+          "unit": "score",
+          "visualization": "gauge",
+          "query": "avg(nps_score)"
+        },
+        {
+          "id": "customer_health_score",
+          "name": "Average Customer Health Score",
+          "target": 75.0,
+          "unit": "score",
+          "visualization": "histogram",
+          "query": "avg(customer_health_score)"
+        },
+        {
+          "id": "support_ticket_resolution_time",
+          "name": "Support Ticket Resolution Time",
+          "target": 4.0,
+          "unit": "hours",
+          "visualization": "time-series",
+          "query": "avg(support_ticket_resolution_time_hours)"
+        },
+        {
+          "id": "churn_rate_monthly",
+          "name": "Monthly Churn Rate",
+          "target": 5.0,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "(sum(rate(subscription_cancellations_total[30d])) / sum(subscription_active_total)) * 100"
+        },
+        {
+          "id": "customer_satisfaction_score",
+          "name": "Customer Satisfaction Score (CSAT)",
+          "target": 85.0,
+          "unit": "percent",
+          "visualization": "gauge",
+          "query": "avg(customer_satisfaction_score)"
+        }
+      ]
+    },
+    "growth_marketing": {
+      "name": "Growth & Marketing",
+      "priority": 5,
+      "metrics": [
+        {
+          "id": "organic_traffic_growth",
+          "name": "Organic Traffic Growth Rate",
+          "target": 15.0,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "((sum(rate(website_visitors_total{source=\"organic\"}[7d])) - sum(rate(website_visitors_total{source=\"organic\"}[7d] offset 7d))) / sum(rate(website_visitors_total{source=\"organic\"}[7d] offset 7d))) * 100"
+        },
+        {
+          "id": "paid_campaign_roas",
+          "name": "Paid Campaign Return on Ad Spend (ROAS)",
+          "target": 3.0,
+          "unit": "ratio",
+          "visualization": "bar-chart",
+          "query": "sum(revenue_total{channel=\"paid\"}) / sum(marketing_spend_total{channel=\"paid\"})",
+          "breakdown": ["campaign", "channel"]
+        },
+        {
+          "id": "email_open_rate",
+          "name": "Email Marketing Open Rate",
+          "target": 25.0,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "avg(email_open_rate)"
+        },
+        {
+          "id": "social_media_engagement",
+          "name": "Social Media Engagement Rate",
+          "target": 5.0,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "avg(social_engagement_rate)",
+          "breakdown": ["platform"]
+        },
+        {
+          "id": "referral_conversion_rate",
+          "name": "Referral Conversion Rate",
+          "target": 8.0,
+          "unit": "percent",
+          "visualization": "time-series",
+          "query": "(sum(subscription_purchases_total{source=\"referral\"}) / sum(website_visitors_total{source=\"referral\"})) * 100"
+        }
+      ]
+    }
+  },
+  "alerts": [
+    {
+      "name": "Revenue Below Target",
+      "condition": "sum(rate(revenue_total[24h]) * 24 * 3600) < 800",
+      "severity": "warning",
+      "description": "Daily revenue is below $800 target",
+      "action": "Review conversion funnel and marketing campaigns"
+    },
+    {
+      "name": "High Churn Rate",
+      "condition": "(sum(rate(subscription_cancellations_total[7d])) / sum(subscription_active_total)) * 100 > 10",
+      "severity": "critical",
+      "description": "Weekly churn rate exceeds 10%",
+      "action": "Immediate customer success intervention required"
+    },
+    {
+      "name": "Low User Engagement",
+      "condition": "avg(session_duration_seconds) < 600",
+      "severity": "warning",
+      "description": "Average session duration below 10 minutes",
+      "action": "Review content engagement and user experience"
+    },
+    {
+      "name": "Poor Performance",
+      "condition": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1.0",
+      "severity": "warning",
+      "description": "95th percentile response time above 1 second",
+      "action": "Investigate performance bottlenecks"
+    },
+    {
+      "name": "Customer Health Declining",
+      "condition": "avg(customer_health_score) < 60",
+      "severity": "warning",
+      "description": "Average customer health score below 60",
+      "action": "Proactive customer success outreach"
+    }
+  ],
+  "reports": {
+    "daily": {
+      "name": "Daily Business Review",
+      "schedule": "0 9 * * *",
+      "recipients": ["leadership@amysoft.tech", "product@amysoft.tech"],
+      "sections": [
+        {
+          "title": "Revenue & Subscriptions",
+          "metrics": ["monthly_recurring_revenue", "active_subscriptions", "conversion_rate"]
+        },
+        {
+          "title": "User Engagement",
+          "metrics": ["daily_active_users", "chapter_completion_rate", "learning_session_duration"]
+        },
+        {
+          "title": "Platform Performance",
+          "metrics": ["uptime_percentage", "api_response_time_p95", "error_rate"]
+        }
+      ]
+    },
+    "weekly": {
+      "name": "Weekly Growth Report",
+      "schedule": "0 9 * * 1",
+      "recipients": ["growth@amysoft.tech", "marketing@amysoft.tech"],
+      "sections": [
+        {
+          "title": "Growth Metrics",
+          "metrics": ["organic_traffic_growth", "paid_campaign_roas", "referral_conversion_rate"]
+        },
+        {
+          "title": "Customer Success",
+          "metrics": ["net_promoter_score", "customer_health_score", "churn_rate_monthly"]
+        },
+        {
+          "title": "Marketing Performance",
+          "metrics": ["customer_acquisition_cost", "email_open_rate", "social_media_engagement"]
+        }
+      ]
+    },
+    "monthly": {
+      "name": "Monthly Executive Summary",
+      "schedule": "0 9 1 * *",
+      "recipients": ["executive@amysoft.tech", "board@amysoft.tech"],
+      "sections": [
+        {
+          "title": "Business Performance",
+          "metrics": ["monthly_recurring_revenue", "customer_lifetime_value", "customer_acquisition_cost"]
+        },
+        {
+          "title": "Product Metrics",
+          "metrics": ["user_retention_d30", "chapter_completion_rate", "template_usage_rate"]
+        },
+        {
+          "title": "Customer Success",
+          "metrics": ["net_promoter_score", "customer_satisfaction_score", "churn_rate_monthly"]
+        }
+      ]
+    }
+  },
+  "dashboards": [
+    {
+      "name": "Real-time Operations",
+      "url": "/dashboards/operations",
+      "refresh": "10s",
+      "panels": [
+        "uptime_percentage",
+        "api_response_time_p95",
+        "error_rate",
+        "active_users_current",
+        "revenue_today"
+      ]
+    },
+    {
+      "name": "Business Intelligence",
+      "url": "/dashboards/business",
+      "refresh": "5m",
+      "panels": [
+        "monthly_recurring_revenue",
+        "active_subscriptions",
+        "conversion_rate",
+        "customer_acquisition_cost",
+        "customer_lifetime_value"
+      ]
+    },
+    {
+      "name": "User Experience",
+      "url": "/dashboards/user-experience",
+      "refresh": "1m",
+      "panels": [
+        "daily_active_users",
+        "chapter_completion_rate",
+        "learning_session_duration",
+        "template_usage_rate",
+        "user_retention_d7"
+      ]
+    },
+    {
+      "name": "Growth & Marketing",
+      "url": "/dashboards/growth",
+      "refresh": "30m",
+      "panels": [
+        "organic_traffic_growth",
+        "paid_campaign_roas",
+        "email_open_rate",
+        "social_media_engagement",
+        "referral_conversion_rate"
+      ]
+    }
+  ],
+  "goalTracking": {
+    "quarterlyTargets": {
+      "Q1_2025": {
+        "revenue": 62500,
+        "subscribers": 2500,
+        "userGrowth": 15000,
+        "retention": 35,
+        "nps": 45
+      },
+      "Q2_2025": {
+        "revenue": 125000,
+        "subscribers": 5000,
+        "userGrowth": 25000,
+        "retention": 40,
+        "nps": 50
+      },
+      "Q3_2025": {
+        "revenue": 187500,
+        "subscribers": 7500,
+        "userGrowth": 35000,
+        "retention": 45,
+        "nps": 55
+      },
+      "Q4_2025": {
+        "revenue": 250000,
+        "subscribers": 10000,
+        "userGrowth": 50000,
+        "retention": 50,
+        "nps": 60
+      }
+    },
+    "milestones": [
+      {
+        "name": "First 1000 Users",
+        "target": 1000,
+        "metric": "total_users",
+        "deadline": "2025-01-15"
+      },
+      {
+        "name": "First $10K MRR",
+        "target": 10000,
+        "metric": "monthly_recurring_revenue",
+        "deadline": "2025-02-01"
+      },
+      {
+        "name": "50% Chapter Completion",
+        "target": 50,
+        "metric": "chapter_completion_rate",
+        "deadline": "2025-02-15"
+      },
+      {
+        "name": "1000 Active Subscribers",
+        "target": 1000,
+        "metric": "active_subscriptions",
+        "deadline": "2025-03-01"
+      },
+      {
+        "name": "$25K MRR",
+        "target": 25000,
+        "metric": "monthly_recurring_revenue",
+        "deadline": "2025-04-01"
+      }
+    ]
+  },
+  "automatedActions": [
+    {
+      "trigger": "churn_rate_monthly > 8",
+      "action": "send_retention_campaign",
+      "parameters": {
+        "campaign": "high_value_retention",
+        "segment": "at_risk_customers"
+      }
+    },
+    {
+      "trigger": "customer_health_score < 50",
+      "action": "create_support_ticket",
+      "parameters": {
+        "priority": "high",
+        "category": "customer_success"
+      }
+    },
+    {
+      "trigger": "api_response_time_p95 > 500",
+      "action": "scale_infrastructure",
+      "parameters": {
+        "service": "api",
+        "scaling_factor": 1.5
+      }
+    },
+    {
+      "trigger": "daily_active_users < 100",
+      "action": "send_engagement_email",
+      "parameters": {
+        "template": "re_engagement",
+        "segment": "inactive_users"
+      }
+    }
+  ]
+}

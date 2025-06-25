@@ -1,0 +1,176 @@
+# Prometheus Configuration for Beyond the AI Plateau Production Monitoring
+# Comprehensive monitoring for all application components
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'amysoft-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alert_rules.yml"
+  - "recording_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # NestJS API application metrics
+  - job_name: 'amysoft-api'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: api:3000
+
+  # PostgreSQL database metrics
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Redis cache metrics
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Nginx web server metrics
+  - job_name: 'nginx-exporter'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # Docker container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Application-specific business metrics
+  - job_name: 'business-metrics'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: /business-metrics
+    scrape_interval: 60s
+    params:
+      module: ['business']
+
+  # SSL certificate monitoring
+  - job_name: 'ssl-exporter'
+    static_configs:
+      - targets: ['ssl-exporter:9219']
+    scrape_interval: 300s
+    metrics_path: /probe
+    params:
+      module: [https_2xx]
+      target:
+        - https://amysoft.tech
+        - https://www.amysoft.tech
+        - https://app.amysoft.tech
+        - https://admin.amysoft.tech
+        - https://api.amysoft.tech
+
+  # Blackbox exporter for endpoint monitoring
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://amysoft.tech
+        - https://www.amysoft.tech
+        - https://app.amysoft.tech
+        - https://admin.amysoft.tech
+        - https://api.amysoft.tech/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # PWA service worker metrics
+  - job_name: 'pwa-metrics'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: /pwa-metrics
+    scrape_interval: 60s
+    params:
+      module: ['pwa_performance']
+
+  # User analytics and engagement metrics
+  - job_name: 'user-analytics'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: /analytics-metrics
+    scrape_interval: 300s
+    params:
+      module: ['user_engagement']
+
+  # Payment processing metrics
+  - job_name: 'payment-metrics'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: /payment-metrics
+    scrape_interval: 120s
+    params:
+      module: ['stripe_payments']
+
+  # Content delivery metrics
+  - job_name: 'content-metrics'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: /content-metrics
+    scrape_interval: 180s
+    params:
+      module: ['content_performance']
+
+# Remote write configuration for long-term storage (optional)
+# remote_write:
+#   - url: "https://prometheus-remote-write-endpoint.com/api/v1/write"
+#     basic_auth:
+#       username: "username"
+#       password: "password"
+
+# Remote read configuration (optional)
+# remote_read:
+#   - url: "https://prometheus-remote-read-endpoint.com/api/v1/read"
+#     basic_auth:
+#       username: "username"
+#       password: "password"
