@@ -1,0 +1,100 @@
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ..:/workspace:cached
+      - nx_cache:/workspace/.nx
+    command: sleep infinity
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/amysoft_dev
+      - REDIS_URL=redis://redis:6379
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY:-}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - dev-network
+    ports:
+      - "4200:4200"   # Website
+      - "8100:8100"   # PWA
+      - "3000:3000"   # API
+      - "4201:4201"   # Admin
+      - "9229:9229"   # Debug port
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: amysoft_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - dev-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - dev-network
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    ports:
+      - "3002:3000"
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  nx_cache:
+  postgres_data:
+  redis_data:
+  grafana_data:

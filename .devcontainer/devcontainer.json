@@ -1,0 +1,85 @@
+{
+  "name": "Beyond the AI Plateau - Full Stack Nx Workspace",
+  "dockerComposeFile": ["docker-compose.dev.yml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "nrwl.angular-console",
+        "angular.ng-template",
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ionic.ionic",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "github.copilot",
+        "github.copilot-chat"
+      ],
+      
+      "settings": {
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.preferences.preferTypeOnlyAutoImports": true,
+        "typescript.suggest.autoImports": true,
+        "nx.enableTaskExecutionDryRunOnChange": true,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": true
+        }
+      }
+    }
+  },
+
+  "containerEnv": {
+    "NODE_OPTIONS": "--max-old-space-size=8192",
+    "NX_DAEMON": "false"
+  },
+
+  "forwardPorts": [3000, 4200, 8100, 4201, 5432, 6379, 9090, 3002, 9229],
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "NestJS API",
+      "onAutoForward": "notify"
+    },
+    "4200": {
+      "label": "Angular Website",
+      "onAutoForward": "notify"
+    },
+    "8100": {
+      "label": "Ionic PWA",
+      "onAutoForward": "notify"
+    },
+    "4201": {
+      "label": "Angular Admin",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL Database"
+    },
+    "6379": {
+      "label": "Redis Cache"
+    },
+    "9090": {
+      "label": "Prometheus Monitoring"
+    },
+    "3002": {
+      "label": "Grafana Dashboard"
+    },
+    "9229": {
+      "label": "Node.js Debug Port"
+    }
+  },
+
+  "postCreateCommand": "sudo chown -R node:node /workspace && npm install",
+  "postStartCommand": "npx nx daemon --start",
+  "remoteUser": "node"
+}

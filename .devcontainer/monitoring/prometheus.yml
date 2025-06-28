@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'website'
+    static_configs:
+      - targets: ['workspace:4200']
+
+  - job_name: 'api'
+    static_configs:
+      - targets: ['workspace:3000']
+
+  - job_name: 'pwa'
+    static_configs:
+      - targets: ['workspace:8100']
+
+  - job_name: 'admin'
+    static_configs:
+      - targets: ['workspace:4201']

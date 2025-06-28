@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/devcontainers/typescript-node:0-20
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    redis-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install global npm packages (using correct package names)
+RUN npm install -g nx @ionic/cli @angular/cli typescript
+
+# Set up proper working directory and ensure node user owns it
+WORKDIR /workspace
+RUN chown node:node /workspace
+
+# Switch to node user (built into the base image)
+USER node
+
+# Configure git defaults (as node user)
+RUN git config --global init.defaultBranch main \
+    && git config --global pull.rebase false
+
+# Set up shell aliases
+RUN echo 'alias ll="ls -la"' >> ~/.bashrc \
+    && echo 'alias nx="npx nx"' >> ~/.bashrc \
+    && echo 'alias ng="npx ng"' >> ~/.bashrc \
+    && echo 'alias ionic="npx ionic"' >> ~/.bashrc \
+    && echo 'export PATH=$PATH:/workspace/node_modules/.bin' >> ~/.bashrc

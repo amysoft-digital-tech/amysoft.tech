@@ -1,0 +1,70 @@
+{
+  "name": "pwa",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/pwa/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/pwa",
+        "index": "apps/pwa/src/index.html",
+        "main": "apps/pwa/src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "apps/pwa/tsconfig.app.json",
+        "assets": [
+          "apps/pwa/src/favicon.ico",
+          "apps/pwa/src/assets"
+        ],
+        "styles": ["apps/pwa/src/styles.scss"],
+        "scripts": [],
+        "serviceWorker": true,
+        "ngswConfigPath": "apps/pwa/ngsw-config.json"
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "pwa:build:production"
+        },
+        "development": {
+          "buildTarget": "pwa:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 8100
+      }
+    }
+  }
+}

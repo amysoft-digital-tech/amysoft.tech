@@ -1,0 +1,24 @@
+{
+  "name": "amysoft.tech",
+  "version": "1.0.0",
+  "description": "Beyond the AI Plateau - Full Stack Learning Platform",
+  "scripts": {
+    "build": "nx build",
+    "test": "nx test",
+    "start": "nx serve website",
+    "dev": "echo 'Use: npm run website, npm run api, npm run pwa, or npm run admin'",
+    "website": "nx serve website --port 4202",
+    "api": "nx serve api --port 3001", 
+    "pwa": "nx serve pwa --port 8101",
+    "admin": "nx serve admin --port 4203",
+    "projects": "nx show projects",
+    "graph": "nx graph"
+  },
+  "private": true,
+  "devDependencies": {
+    "@nx/devkit": "^21.2.1",
+    "@nx/workspace": "^21.2.1"
+  },
+  "author": "Amy Software Digital Technology",
+  "license": "MIT"
+}
