@@ -29,6 +29,10 @@ This directory contains comprehensive requirements, specifications, and design d
 ### Scripts
 - **[Content Migration Setup](scripts/content-migration-setup.sh)**: Automated setup script for implementing content migration in existing Nx workspace
 
+### Quality Assurance
+- **[Comprehensive Test Plan](qa/comprehensive-test-plan.md)**: Complete QA strategy based on closed GitHub issues analysis and PRD requirements
+- **[Traceability Matrix](qa/traceability-matrix.md)**: PRD-GitHub issues-test cases mapping with coverage analysis
+
 ### Content Strategy
 - **[Content Extraction Strategy](content/content-extraction-strategy.md)**: Comprehensive content extraction plan from source repository
 
@@ -68,6 +72,13 @@ All documentation is directly linked to GitHub issues and milestones for project
 - Angular/Ionic frontend integration with PWA capabilities
 - Nx workspace enhancement with shared libraries
 - Git submodule integration for content repository access
+
+### Quality Assurance Strategy (Issues #115-#119)
+- Content migration test suite with 99% accuracy validation
+- Multi-tier subscription system testing ($24.95/$97/$297)
+- PWA offline functionality and cross-device testing
+- Performance testing with <2s load time and 90+ Lighthouse score
+- Brand identity and design system compliance validation
 
 ### Brand Identity (Issues #88-#91)
 - 4-week implementation timeline
