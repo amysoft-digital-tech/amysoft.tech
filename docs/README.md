@@ -20,6 +20,11 @@ This directory contains comprehensive requirements, specifications, and design d
 
 ### Architecture
 - **[Nx Hybrid Architecture](architecture/nx-hybrid-architecture.md)**: Complete system architecture with Nx monorepo + dev container strategy
+- **[Content Migration Schema](architecture/content-migration-schema.prisma)**: Prisma database schema for content management and migration
+- **[Content Migration Service](architecture/content-migration-service.ts)**: NestJS service for migrating content from source repository
+- **[Content API Implementation](architecture/content-api-implementation.ts)**: Complete NestJS content API with controller, service, and DTOs
+- **[Angular Content Service](architecture/angular-content-service.ts)**: Angular service with caching and Ionic PWA integration
+- **[Nx Content Migration Strategy](architecture/nx-content-migration-strategy.md)**: Comprehensive content migration strategy for existing Nx workspace
 
 ### Content Strategy
 - **[Content Extraction Strategy](content/content-extraction-strategy.md)**: Comprehensive content extraction plan from source repository
@@ -52,6 +57,14 @@ All documentation is directly linked to GitHub issues and milestones for project
 - Comprehensive technical implementation (issues #100-#105)
 - Focus on Tier 1 content (85% existing)
 - Multi-tier subscription system with offline-first architecture
+
+### Content Migration Strategy (Issues #107-#112)
+- Database schema implementation for content management
+- NestJS migration service for content extraction
+- Content API development with full CRUD operations
+- Angular/Ionic frontend integration with PWA capabilities
+- Nx workspace enhancement with shared libraries
+- Git submodule integration for content repository access
 
 ### Brand Identity (Issues #88-#91)
 - 4-week implementation timeline
