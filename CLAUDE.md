@@ -83,12 +83,58 @@ When working on GitHub issues, follow this workflow:
    gh issue view <issue-number> --json number,title,body,labels,assignees,url
    ```
 
-2. **Gather Issue Context**:
+2. **Automated Context Discovery**:
+   ```bash
+   # Use the automated context gathering script
+   ./docs/scripts/gather-issue-context.sh <issue-number>
+   
+   # Or manually search for specific keywords
+   ISSUE_NUMBER=<issue-number>
+   ISSUE_KEYWORDS=$(gh issue view $ISSUE_NUMBER --json title,body | jq -r '.title + " " + .body' | grep -oE '\b[A-Za-z]{4,}\b' | tr '[:upper:]' '[:lower:]' | sort -u)
+   
+   # Search documentation for relevant context
+   echo "=== Searching Project Requirements ==="
+   find docs/project-requirements -name "*.md" -exec grep -l -i "$ISSUE_KEYWORDS" {} \;
+   
+   echo "=== Searching Specifications ==="
+   find docs/specifications -name "*.md" -exec grep -l -i "$ISSUE_KEYWORDS" {} \;
+   
+   echo "=== Searching Architecture Docs ==="
+   find docs/architecture -name "*.md" -exec grep -l -i "$ISSUE_KEYWORDS" {} \;
+   
+   echo "=== Searching Design Guidelines ==="
+   find docs/design -name "*.md" -exec grep -l -i "$ISSUE_KEYWORDS" {} \;
+   ```
+
+3. **Gather Issue Context**:
    - Read issue description and acceptance criteria
    - Review comments and related discussions
    - Search codebase for related files mentioned in issue
    - Extract code examples and technical requirements
    - Identify affected applications (website, api, pwa, admin)
+   
+   **Enhanced Context Gathering**:
+   ```bash
+   # Search documentation for related requirements and guidelines
+   find docs/ -type f -name "*.md" | xargs grep -l "<keyword>" 
+   
+   # Check specific documentation areas:
+   # - docs/project-requirements/ - Original PRDs and requirements
+   # - docs/specifications/ - API and component specifications
+   # - docs/architecture/ - Technical architecture decisions
+   # - docs/design/ - Design system and brand guidelines
+   # - docs/content/ - Content strategy and guidelines
+   ```
+   
+   **Best Practices Discovery**:
+   - Review relevant documentation in `docs/` directory:
+     - Check `docs/project-requirements/` for original requirements
+     - Check `docs/specifications/` for API and component specs
+     - Check `docs/design/` for design system guidelines
+     - Check `docs/architecture/` for technical patterns
+   - Search for similar implementations in the codebase
+   - Review established patterns in existing code
+   - Ensure consistency with design system and brand guidelines
 
 3. **Create Feature Branch**:
    ```bash
@@ -108,21 +154,47 @@ When working on GitHub issues, follow this workflow:
    gh issue comment <issue-number> --body "Started working on this issue. Branch: feature/123-add-user-authentication"
    ```
 
+### Implementation Guidelines
+
+5. **Follow Established Patterns**:
+   - **Component Development**:
+     - Review existing components in `libs/shared/ui-components`
+     - Follow the sophisticated design system guidelines
+     - Use Apple-like aesthetics with proper gradients and glass morphism
+     - Ensure WCAG 2.1 AA+ accessibility compliance
+   
+   - **API Development**:
+     - Follow NestJS best practices with DTOs and validation
+     - Use TypeORM entities with proper relationships
+     - Implement comprehensive error handling
+     - Add Swagger/OpenAPI documentation
+   
+   - **State Management**:
+     - Use established patterns for data flow
+     - Implement proper loading and error states
+     - Consider performance implications
+   
+   - **Testing Requirements**:
+     - Write unit tests for all new functionality
+     - Add integration tests for API endpoints
+     - Include E2E tests for critical user flows
+     - Maintain >80% code coverage
+
 ### Implementation and Progress Tracking
 
-5. **Track Progress with Commits**:
+6. **Track Progress with Commits**:
    - Use conventional commit format: `feat(#123): implement user login form`
    - Commit types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
    - Reference issue number in each commit
    - Make atomic commits with clear descriptions
 
-6. **Regular Progress Updates**:
+7. **Regular Progress Updates**:
    ```bash
    # Update issue every 3-5 commits or at milestones
    gh issue comment <issue-number> --body "Progress update: Completed login form implementation. Next: Add validation logic."
    ```
 
-7. **Push Changes**:
+8. **Push Changes**:
    ```bash
    # Push feature branch with tracking
    git push -u origin feature/123-add-user-authentication
@@ -130,7 +202,7 @@ When working on GitHub issues, follow this workflow:
 
 ### Pull Request Creation and Review
 
-8. **Create Pull Request**:
+9. **Create Pull Request**:
    ```bash
    gh pr create --title "feat: implement user authentication system (#123)" \
                 --body "## Summary
@@ -154,15 +226,15 @@ When working on GitHub issues, follow this workflow:
    Closes #123"
    ```
 
-9. **Update Issue with PR Link**:
-   ```bash
-   gh issue comment <issue-number> --body "Implementation complete. Created PR: #<pr-number>"
-   gh issue edit <issue-number> --add-label "ready-for-review" --remove-label "in-progress"
-   ```
+10. **Update Issue with PR Link**:
+    ```bash
+    gh issue comment <issue-number> --body "Implementation complete. Created PR: #<pr-number>"
+    gh issue edit <issue-number> --add-label "ready-for-review" --remove-label "in-progress"
+    ```
 
 ### PR Review and Merge Workflow
 
-10. **Review Open PRs**:
+11. **Review Open PRs**:
     ```bash
     # List PRs ready for review
     gh pr list --label "ready-for-review" --state open
@@ -173,7 +245,7 @@ When working on GitHub issues, follow this workflow:
     gh pr checks <pr-number>
     ```
 
-11. **Validate PR Before Merge**:
+12. **Validate PR Before Merge**:
     ```bash
     # Check CI status
     gh pr checks <pr-number>
@@ -187,7 +259,7 @@ When working on GitHub issues, follow this workflow:
     nx affected:build --base=main
     ```
 
-12. **Merge PR**:
+13. **Merge PR**:
     ```bash
     # Squash and merge (preferred)
     gh pr merge <pr-number> --squash --delete-branch
@@ -196,7 +268,7 @@ When working on GitHub issues, follow this workflow:
     gh pr comment <pr-number> --body "Merged successfully. Issue resolved."
     ```
 
-13. **Close Issue**:
+14. **Close Issue**:
     ```bash
     gh issue close <issue-number> --comment "Resolved in PR #<pr-number>. Feature implemented and tested."
     ```
