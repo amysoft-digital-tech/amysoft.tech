@@ -33,6 +33,9 @@ This directory contains comprehensive requirements, specifications, and design d
 - **[Comprehensive Test Plan](qa/comprehensive-test-plan.md)**: Complete QA strategy based on closed GitHub issues analysis and PRD requirements
 - **[Traceability Matrix](qa/traceability-matrix.md)**: PRD-GitHub issues-test cases mapping with coverage analysis
 
+### Roadmap
+- **[Development Roadmap](roadmap/development-roadmap.md)**: 6-phase implementation plan with team assignments and critical path analysis
+
 ### Content Strategy
 - **[Content Extraction Strategy](content/content-extraction-strategy.md)**: Comprehensive content extraction plan from source repository
 
