@@ -3,15 +3,33 @@
 ## Overview
 This directory contains comprehensive requirements, specifications, and design documentation for the Beyond the AI Plateau project launch campaign.
 
+**Key Architecture**: The project uses a **hybrid Nx monorepo + dev container** approach that maximizes both Claude Code efficiency and Nx benefits while maintaining strategic separation for content and infrastructure.
+
+**Content Strategy**: Leverages a separate content repository with 89% complete materials (100+ templates, 9 chapters, visual diagrams) for efficient 60-hour extraction vs 200-hour creation from scratch.
+
 ## Structure
 
 ### Requirements
 - **[Marketing Website Deployment](requirements/marketing-website-deployment.md)**: Complete specification for the marketing website launch with GitHub issues #74-#80
 - **[PWA Implementation Strategy](requirements/pwa-implementation-strategy.md)**: Progressive Web Application development plan with GitHub issues #81-#85
+- **[Comprehensive PWA Implementation](project-requirements/comprehensive-pwa-implementation.md)**: Detailed PWA technical requirements with GitHub issues #100-#105
 
 ### Design
 - **[Brand Identity Implementation](design/brand-identity-implementation.md)**: Complete visual identity system with GitHub issues #88-#91  
 - **[Sophisticated Design System](design/sophisticated-design-system.md)**: Light and elegant conversion design with GitHub issues #92-#95
+
+### Architecture
+- **[Nx Hybrid Architecture](architecture/nx-hybrid-architecture.md)**: Complete system architecture with Nx monorepo + dev container strategy
+
+### Content Strategy
+- **[Content Extraction Strategy](content/content-extraction-strategy.md)**: Comprehensive content extraction plan from source repository
+
+### Project Requirements
+- **[Marketing Website Final Tasks](project-requirements/marketing-website-final-tasks.md)**: Original 7-phase marketing website deployment plan (source for issues #74-#80)
+- **[PWA Implementation Tasks](project-requirements/pwa-implementation-tasks.md)**: 10-week PWA implementation strategy (source for issues #81-#85)
+- **[Brand Identity Implementation](project-requirements/brand-identity-implementation.md)**: 4-week brand identity system (source for issues #88-#91)  
+- **[Sophisticated Design System](project-requirements/sophisticated-design-system.md)**: Light, elegant conversion design (source for issues #92-#95)
+- **[Comprehensive PWA Implementation](project-requirements/comprehensive-pwa-implementation.md)**: Detailed PWA technical requirements with GitHub issues #100-#105
 
 ### Specifications
 - **[API Specification](specifications/api-specification.md)**: Complete API documentation and endpoints
@@ -29,10 +47,11 @@ All documentation is directly linked to GitHub issues and milestones for project
 - Target launch: July 1, 2025
 - Goal: $85K Month 1 revenue
 
-### PWA Implementation (Issues #81-#85)  
-- 5 phases over 10 weeks
+### PWA Implementation (Issues #81-#85, #100-#105)  
+- 5 phases over 10 weeks (original strategy)
+- Comprehensive technical implementation (issues #100-#105)
 - Focus on Tier 1 content (85% existing)
-- Scalable architecture for future expansion
+- Multi-tier subscription system with offline-first architecture
 
 ### Brand Identity (Issues #88-#91)
 - 4-week implementation timeline
