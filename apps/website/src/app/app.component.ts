@@ -1,23 +1,13 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
+  imports: [RouterOutlet],
   template: `
-    <h1>Beyond the AI Plateau</h1>
-    <p>Marketing Website - Coming Soon</p>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      padding: 2rem;
-      text-align: center;
-    }
-    h1 {
-      color: #2563eb;
-      margin-bottom: 1rem;
-    }
-  `]
+    <router-outlet></router-outlet>
+  `
 })
 export class AppComponent {
   title = 'Beyond the AI Plateau';
