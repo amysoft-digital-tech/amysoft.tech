@@ -3,6 +3,8 @@
 ## Overview
 This directory contains comprehensive requirements, specifications, and design documentation for the Beyond the AI Plateau project launch campaign.
 
+**Key Architecture**: The project uses a **hybrid Nx monorepo + dev container** approach that maximizes both Claude Code efficiency and Nx benefits while maintaining strategic separation for content and infrastructure.
+
 ## Structure
 
 ### Requirements
@@ -12,6 +14,9 @@ This directory contains comprehensive requirements, specifications, and design d
 ### Design
 - **[Brand Identity Implementation](design/brand-identity-implementation.md)**: Complete visual identity system with GitHub issues #88-#91  
 - **[Sophisticated Design System](design/sophisticated-design-system.md)**: Light and elegant conversion design with GitHub issues #92-#95
+
+### Architecture
+- **[Nx Hybrid Architecture](architecture/nx-hybrid-architecture.md)**: Complete system architecture with Nx monorepo + dev container strategy
 
 ### Specifications
 - **[API Specification](specifications/api-specification.md)**: Complete API documentation and endpoints
