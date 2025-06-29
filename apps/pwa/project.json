@@ -17,7 +17,13 @@
         "tsConfig": "apps/pwa/tsconfig.app.json",
         "assets": [
           "apps/pwa/src/favicon.ico",
-          "apps/pwa/src/assets"
+          "apps/pwa/src/assets",
+          "apps/pwa/src/manifest.webmanifest",
+          {
+            "glob": "**/*",
+            "input": "node_modules/ionicons/dist/ionicons/svg",
+            "output": "./svg"
+          }
         ],
         "styles": ["apps/pwa/src/styles.scss"],
         "scripts": [],

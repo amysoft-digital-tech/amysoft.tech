@@ -25,6 +25,70 @@
           "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
         ]
       }
+    },
+    {
+      "name": "fonts",
+      "installMode": "prefetch",
+      "resources": {
+        "urls": [
+          "https://cdn.jsdelivr.net/npm/@ionic/core/css/*.css",
+          "https://fonts.googleapis.com/**",
+          "https://fonts.gstatic.com/**"
+        ]
+      }
     }
-  ]
+  ],
+  "dataGroups": [
+    {
+      "name": "api-content",
+      "urls": [
+        "/api/chapters",
+        "/api/templates",
+        "/api/content/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "1h",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "api-user",
+      "urls": [
+        "/api/user/**",
+        "/api/bookmarks/**",
+        "/api/progress/**"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 50,
+        "maxAge": "5m",
+        "timeout": "5s"
+      }
+    },
+    {
+      "name": "offline-content",
+      "urls": [
+        "/api/chapters/*/offline",
+        "/api/templates/*/offline"
+      ],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 200,
+        "maxAge": "7d"
+      }
+    }
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**"
+  ],
+  "navigationRequestStrategy": "performance",
+  "appData": {
+    "version": "1.0.0",
+    "changelog": "Initial PWA release with offline capabilities"
+  }
 }

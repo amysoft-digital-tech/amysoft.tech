@@ -1,0 +1,43 @@
+{
+  "repository": {
+    "owner": "amysoft-digital-tech",
+    "name": "amysoft.tech"
+  },
+  "issue": {
+    "labels": {
+      "inProgress": "in-progress",
+      "readyForReview": "ready-for-review",
+      "automated": "claude-automated"
+    },
+    "branchPrefix": "feature/",
+    "bugBranchPrefix": "fix/",
+    "commitPrefix": {
+      "feature": "feat",
+      "bug": "fix",
+      "docs": "docs",
+      "refactor": "refactor",
+      "test": "test"
+    },
+    "assignToSelf": true,
+    "commentOnStart": true
+  },
+  "pr": {
+    "template": true,
+    "autoMergeLabels": ["auto-merge", "claude-approved"],
+    "mergeStrategy": "squash",
+    "deleteAfterMerge": true,
+    "updateBranch": true,
+    "waitForChecks": true,
+    "requiredChecks": ["build", "test", "lint"]
+  },
+  "workflow": {
+    "maxIssuesPerSession": 1,
+    "progressUpdateInterval": 10,
+    "verboseLogging": true,
+    "dryRun": false
+  },
+  "claude": {
+    "signature": "🤖 Generated with [Claude Code](https://claude.ai/code)",
+    "coAuthor": "Co-Authored-By: Claude <noreply@anthropic.com>"
+  }
+}
