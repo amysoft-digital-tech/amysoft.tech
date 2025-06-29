@@ -5,6 +5,8 @@ This directory contains comprehensive requirements, specifications, and design d
 
 **Key Architecture**: The project uses a **hybrid Nx monorepo + dev container** approach that maximizes both Claude Code efficiency and Nx benefits while maintaining strategic separation for content and infrastructure.
 
+**Content Strategy**: Leverages a separate content repository with 89% complete materials (100+ templates, 9 chapters, visual diagrams) for efficient 60-hour extraction vs 200-hour creation from scratch.
+
 ## Structure
 
 ### Requirements
@@ -17,6 +19,9 @@ This directory contains comprehensive requirements, specifications, and design d
 
 ### Architecture
 - **[Nx Hybrid Architecture](architecture/nx-hybrid-architecture.md)**: Complete system architecture with Nx monorepo + dev container strategy
+
+### Content Strategy
+- **[Content Extraction Strategy](content/content-extraction-strategy.md)**: Comprehensive content extraction plan from source repository
 
 ### Specifications
 - **[API Specification](specifications/api-specification.md)**: Complete API documentation and endpoints
