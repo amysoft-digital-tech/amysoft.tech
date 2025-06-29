@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { getDatabaseConfig } from '../config/database.config';
 import { AuthModule } from '../modules/auth/auth.module';
 import { AdminModule } from '../modules/admin/admin.module';
+import { MarketingModule } from '../modules/marketing.module';
 import { UsersModule } from '../modules/users/users.module';
 import { ContentModule } from '../modules/content/content.module';
 import { PaymentsModule } from '../modules/payments/payments.module';
@@ -42,6 +43,7 @@ import { AnalyticsModule } from '../modules/analytics/analytics.module';
     // Feature modules
     AuthModule,
     AdminModule,
+    MarketingModule,
     UsersModule,
     ContentModule,
     PaymentsModule,
