@@ -26,6 +26,9 @@ This directory contains comprehensive requirements, specifications, and design d
 - **[Angular Content Service](architecture/angular-content-service.ts)**: Angular service with caching and Ionic PWA integration
 - **[Nx Content Migration Strategy](architecture/nx-content-migration-strategy.md)**: Comprehensive content migration strategy for existing Nx workspace
 
+### Scripts
+- **[Content Migration Setup](scripts/content-migration-setup.sh)**: Automated setup script for implementing content migration in existing Nx workspace
+
 ### Content Strategy
 - **[Content Extraction Strategy](content/content-extraction-strategy.md)**: Comprehensive content extraction plan from source repository
 
