@@ -95,6 +95,16 @@ export class User {
   @Column({ nullable: true })
   lastLoginIp?: string;
 
+  // Admin-specific fields
+  @Column({ default: false })
+  isAdmin: boolean;
+
+  @Column({ nullable: true })
+  adminRole?: string;
+
+  @Column({ nullable: true })
+  lastLogin?: Date;
+
   @Column({ type: 'jsonb', nullable: true })
   preferences?: {
     theme: 'light' | 'dark' | 'system';

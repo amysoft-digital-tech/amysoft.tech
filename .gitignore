@@ -48,4 +48,4 @@ build/
 dist/
 
 # Cache directories
-.cache/
+.cache/.angular/
