@@ -1,0 +1,200 @@
+groups:
+  - name: amysoft-production-alerts
+    rules:
+      # Admin Console Alerts
+      - alert: AdminConsoleDown
+        expr: up{job="admin-console"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: admin-console
+        annotations:
+          summary: "Admin Console is down"
+          description: "Admin Console has been down for more than 2 minutes"
+          
+      - alert: AdminConsoleHighErrorRate
+        expr: rate(nginx_http_requests_total{job="admin-console",status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: admin-console
+        annotations:
+          summary: "High error rate in Admin Console"
+          description: "Admin Console error rate is {{ $value }} requests per second"
+          
+      - alert: AdminConsoleSlowResponse
+        expr: histogram_quantile(0.95, rate(nginx_http_request_duration_seconds_bucket{job="admin-console"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: admin-console
+        annotations:
+          summary: "Admin Console slow response times"
+          description: "95th percentile response time is {{ $value }}s"
+
+      # API Service Alerts
+      - alert: APIServiceDown
+        expr: up{job="api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "API Service is down"
+          description: "API Service has been down for more than 1 minute"
+          
+      - alert: APIHighErrorRate
+        expr: rate(http_requests_total{job="api",status=~"5.."}[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "High error rate in API"
+          description: "API error rate is {{ $value }} requests per second"
+
+      # Database Alerts
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: database
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database has been down for more than 1 minute"
+          
+      - alert: PostgreSQLHighConnections
+        expr: pg_stat_database_numbackends > 150
+        for: 5m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "High number of PostgreSQL connections"
+          description: "PostgreSQL has {{ $value }} active connections"
+          
+      - alert: PostgreSQLSlowQueries
+        expr: rate(pg_stat_database_tup_fetched[5m]) / rate(pg_stat_database_tup_returned[5m]) < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          service: database
+        annotations:
+          summary: "PostgreSQL slow queries detected"
+          description: "Query efficiency is below 80%"
+
+      # Redis Alerts
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          service: cache
+        annotations:
+          summary: "Redis is down"
+          description: "Redis cache has been down for more than 2 minutes"
+          
+      - alert: RedisHighMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: cache
+        annotations:
+          summary: "Redis high memory usage"
+          description: "Redis memory usage is at {{ $value | humanizePercentage }}"
+
+      # System Resource Alerts  
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 80% on {{ $labels.instance }}"
+          
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 85% on {{ $labels.instance }}"
+          
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"}) < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is below 10% on {{ $labels.instance }}"
+
+      # SSL Certificate Alerts
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+        for: 1m
+        labels:
+          severity: warning
+          service: ssl
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in less than 7 days"
+          
+      - alert: SSLCertificateExpired
+        expr: probe_ssl_earliest_cert_expiry - time() < 0
+        for: 1m
+        labels:
+          severity: critical
+          service: ssl
+        annotations:
+          summary: "SSL certificate expired"
+          description: "SSL certificate for {{ $labels.instance }} has expired"
+
+      # Website Availability Alerts
+      - alert: WebsiteDown
+        expr: probe_success == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: website
+        annotations:
+          summary: "Website is down"
+          description: "{{ $labels.instance }} has been down for more than 2 minutes"
+          
+      - alert: WebsiteSlowResponse
+        expr: probe_duration_seconds > 5
+        for: 5m
+        labels:
+          severity: warning
+          service: website
+        annotations:
+          summary: "Website slow response"
+          description: "{{ $labels.instance }} response time is {{ $value }}s"
+
+      # Business Metrics Alerts
+      - alert: LowUserActivity
+        expr: increase(user_sessions_total[1h]) < 10
+        for: 1h
+        labels:
+          severity: warning
+          service: business
+        annotations:
+          summary: "Low user activity"
+          description: "Only {{ $value }} user sessions in the last hour"
+          
+      - alert: HighErrorRateAcrossServices
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: business
+        annotations:
+          summary: "High error rate across all services"
+          description: "Overall error rate is {{ $value | humanizePercentage }}"
