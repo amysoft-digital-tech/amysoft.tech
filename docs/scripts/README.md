@@ -221,3 +221,40 @@ npx prisma studio
 ---
 
 This script transforms your existing Nx workspace into a powerful content management and delivery platform while maintaining your established development patterns and infrastructure choices.
+
+## Additional Scripts
+
+### gather-issue-context.sh
+
+Automates context gathering for GitHub issues by searching documentation and codebase for relevant information.
+
+**Features:**
+- Extracts keywords from issue title and body
+- Searches project requirements, specifications, architecture docs
+- Identifies related code patterns and components
+- Suggests next steps based on findings
+- Finds potentially related issues
+
+**Usage:**
+```bash
+./docs/scripts/gather-issue-context.sh <issue-number>
+```
+
+**Example:**
+```bash
+./docs/scripts/gather-issue-context.sh 78
+```
+
+**Output includes:**
+- Issue details and labels
+- Relevant documentation files (requirements, specs, architecture, design)
+- Related code patterns in components, APIs, and PWA
+- Suggested implementation approaches
+- Related issues for reference
+
+**Integration with Workflow:**
+This script is integrated into the GitHub issue workflow in CLAUDE.md to ensure developers:
+1. Gather comprehensive context before implementation
+2. Find existing patterns and guidelines to follow
+3. Maintain consistency with established architecture
+4. Avoid duplicate work by finding related issues
