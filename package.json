@@ -8,7 +8,7 @@
     "start": "nx serve website",
     "dev": "echo 'Use: npm run website, npm run api, npm run pwa, or npm run admin'",
     "website": "nx serve website --port 4202",
-    "api": "nx serve api --port 3001", 
+    "api": "nx serve api --port 3001",
     "pwa": "nx serve pwa --port 8101",
     "admin": "nx serve admin --port 4203",
     "projects": "nx show projects",
@@ -16,9 +16,16 @@
   },
   "private": true,
   "devDependencies": {
+    "@nguniversal/express-engine": "^16.2.0",
     "@nx/devkit": "^21.2.1",
     "@nx/workspace": "^21.2.1"
   },
   "author": "Amy Software Digital Technology",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@angular/platform-browser": "^16.2.12",
+    "@angular/router": "^16.2.12",
+    "@nguniversal/builders": "^16.2.0",
+    "web-vitals": "^5.0.3"
+  }
 }
