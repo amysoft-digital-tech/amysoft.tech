@@ -63,6 +63,70 @@
       "options": {
         "port": 4200
       }
+    },
+    "server": {
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/apps/website-server",
+        "main": "apps/website/src/main.server.ts",
+        "tsConfig": "apps/website/tsconfig.server.json"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media",
+          "fileReplacements": [
+            {
+              "replace": "apps/website/src/environments/environment.ts",
+              "with": "apps/website/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false,
+          "vendorChunk": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-ssr": {
+      "executor": "@nguniversal/builders:ssr-dev-server",
+      "configurations": {
+        "development": {
+          "browserTarget": "website:build:development",
+          "serverTarget": "website:server:development"
+        },
+        "production": {
+          "browserTarget": "website:build:production",
+          "serverTarget": "website:server:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "prerender": {
+      "executor": "@nguniversal/builders:prerender",
+      "options": {
+        "routes": [
+          "/",
+          "/about",
+          "/contact",
+          "/pricing",
+          "/blog"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "website:build:production",
+          "serverTarget": "website:server:production"
+        },
+        "development": {
+          "browserTarget": "website:build:development",
+          "serverTarget": "website:server:development"
+        }
+      },
+      "defaultConfiguration": "production"
     }
   }
 }
