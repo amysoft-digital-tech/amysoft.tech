@@ -8,7 +8,7 @@
     "start": "nx serve website",
     "dev": "echo 'Use: npm run website, npm run api, npm run pwa, or npm run admin'",
     "website": "nx serve website --port 4202",
-    "api": "nx serve api --port 3001", 
+    "api": "nx serve api --port 3001",
     "pwa": "nx serve pwa --port 8101",
     "admin": "nx serve admin --port 4203",
     "projects": "nx show projects",
@@ -16,9 +16,25 @@
   },
   "private": true,
   "devDependencies": {
+    "@angular-devkit/build-angular": "^20.0.4",
+    "@nx/angular": "^21.2.1",
     "@nx/devkit": "^21.2.1",
     "@nx/workspace": "^21.2.1"
   },
   "author": "Amy Software Digital Technology",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@angular/common": "^20.0.5",
+    "@angular/core": "^20.0.5",
+    "@angular/platform-browser": "^20.0.5",
+    "@angular/pwa": "^20.0.4",
+    "@angular/router": "^20.0.5",
+    "@angular/service-worker": "^20.0.5",
+    "@capacitor/cli": "^7.4.0",
+    "@capacitor/core": "^7.4.0",
+    "@ionic/angular": "^8.6.2",
+    "@ionic/angular-toolkit": "^12.2.0",
+    "rxjs": "^7.8.2",
+    "zone.js": "^0.15.1"
+  }
 }
