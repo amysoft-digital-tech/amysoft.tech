@@ -1,0 +1,200 @@
+<div class="admin-layout">
+  <header class="header">
+    <h1>Beyond the AI Plateau</h1>
+    <h2>Admin Console</h2>
+    
+    <div class="header-actions">
+      <div class="performance-indicator" [class.good]="performanceScore === 'good'" 
+           [class.warning]="performanceScore === 'needs-improvement'"
+           [class.poor]="performanceScore === 'poor'">
+        Performance: {{ performanceScore }}
+      </div>
+      
+      <button class="refresh-btn" (click)="refreshData()" [disabled]="loading">
+        <span [class.spinning]="loading">⟳</span> Refresh
+      </button>
+    </div>
+  </header>
+  
+  <nav class="sidebar">
+    <div class="nav-section">
+      <h3>Dashboard</h3>
+      <ul>
+        <li [class.active]="activeSection === 'analytics'" (click)="setActiveSection('analytics')">
+          📊 Analytics
+        </li>
+        <li [class.active]="activeSection === 'users'" (click)="setActiveSection('users')">
+          👥 Users
+        </li>
+        <li [class.active]="activeSection === 'content'" (click)="setActiveSection('content')">
+          📚 Content
+        </li>
+        <li [class.active]="activeSection === 'sales'" (click)="setActiveSection('sales')">
+          💳 Sales
+        </li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <h3>Management</h3>
+      <ul>
+        <li [class.active]="activeSection === 'editor'" (click)="setActiveSection('editor')">
+          📝 Content Editor
+        </li>
+        <li [class.active]="activeSection === 'campaigns'" (click)="setActiveSection('campaigns')">
+          🎯 Campaigns
+        </li>
+        <li [class.active]="activeSection === 'settings'" (click)="setActiveSection('settings')">
+          ⚙️ Settings
+        </li>
+        <li [class.active]="activeSection === 'security'" (click)="setActiveSection('security')">
+          🔐 Security
+        </li>
+      </ul>
+    </div>
+    
+    <div class="nav-section">
+      <h3>System</h3>
+      <ul>
+        <li [class.active]="activeSection === 'performance'" (click)="setActiveSection('performance')">
+          📈 Performance
+        </li>
+        <li [class.active]="activeSection === 'cache'" (click)="setActiveSection('cache')">
+          💾 Cache Stats
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <main class="content">
+    @if (loading) {
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+      </div>
+    } @else if (error) {
+      <div class="error-container">
+        <h3>⚠️ Error Loading Data</h3>
+        <p>{{ error }}</p>
+        <button (click)="refreshData()" class="retry-btn">Retry</button>
+      </div>
+    } @else {
+      <div class="dashboard-content">
+        @switch (activeSection) {
+          @case ('analytics') {
+            <div class="dashboard-cards">
+              <div class="card" data-cy="total-users-metric">
+                <h3>Total Users</h3>
+                <p class="metric">{{ dashboardData?.totalUsers | number }}</p>
+                <span class="change positive">+12%</span>
+              </div>
+              
+              <div class="card" data-cy="sales-metric">
+                <h3>Sales Today</h3>
+                <p class="metric">${{ dashboardData?.salesToday | number }}</p>
+                <span class="change positive">+8%</span>
+              </div>
+              
+              <div class="card" data-cy="content-views-metric">
+                <h3>Content Views</h3>
+                <p class="metric">{{ dashboardData?.contentViews | number }}</p>
+                <span class="change positive">+15%</span>
+              </div>
+              
+              <div class="card" data-cy="active-sessions-metric">
+                <h3>Active Sessions</h3>
+                <p class="metric">{{ dashboardData?.activeSessions | number }}</p>
+                <span class="change neutral">±0%</span>
+              </div>
+            </div>
+            
+            @if (dashboardData?.userGrowth) {
+              <div class="chart-container">
+                <h3>User Growth (Last 7 Days)</h3>
+                <div class="simple-chart">
+                  @for (value of dashboardData.userGrowth.daily; track $index) {
+                    <div class="chart-bar" 
+                         [style.height.%]="(value / getMaxValue(dashboardData.userGrowth.daily)) * 100">
+                      <span class="chart-value">{{ value }}</span>
+                      <span class="chart-label">{{ dashboardData.userGrowth.labels[$index] }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+          
+          @case ('performance') {
+            <div class="performance-dashboard">
+              <h2>Performance Monitoring</h2>
+              
+              <div class="performance-cards">
+                <div class="card">
+                  <h3>Web Vitals</h3>
+                  <div class="vitals-grid">
+                    <div class="vital">
+                      <span class="vital-label">FCP</span>
+                      <span class="vital-value">{{ performanceMetrics?.fcp | number:'1.0-1' }}ms</span>
+                    </div>
+                    <div class="vital">
+                      <span class="vital-label">LCP</span>
+                      <span class="vital-value">{{ performanceMetrics?.lcp | number:'1.0-1' }}ms</span>
+                    </div>
+                    <div class="vital">
+                      <span class="vital-label">FID</span>
+                      <span class="vital-value">{{ performanceMetrics?.fid | number:'1.0-1' }}ms</span>
+                    </div>
+                    <div class="vital">
+                      <span class="vital-label">CLS</span>
+                      <span class="vital-value">{{ performanceMetrics?.cls | number:'1.0-3' }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="card">
+                  <h3>Memory Usage</h3>
+                  @if (performanceMetrics?.memoryUsage) {
+                    <div class="memory-stats">
+                      <p>Used: {{ formatBytes(performanceMetrics.memoryUsage.usedJSHeapSize) }}</p>
+                      <p>Total: {{ formatBytes(performanceMetrics.memoryUsage.totalJSHeapSize) }}</p>
+                      <p>Limit: {{ formatBytes(performanceMetrics.memoryUsage.jsHeapSizeLimit) }}</p>
+                    </div>
+                  } @else {
+                    <p>Memory monitoring not available</p>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+          
+          @case ('cache') {
+            <div class="cache-dashboard">
+              <h2>Cache Statistics</h2>
+              
+              <div class="cache-cards">
+                <div class="card">
+                  <h3>Cache Performance</h3>
+                  <div class="cache-stats">
+                    <p>Items: {{ cacheStats?.size || 0 }}</p>
+                    <p>Hit Rate: {{ (cacheStats?.hitRate * 100) | number:'1.0-1' }}%</p>
+                    <p>Memory: {{ formatBytes(cacheStats?.memoryUsage || 0) }}</p>
+                  </div>
+                  <button (click)="clearCache()" class="clear-cache-btn">Clear Cache</button>
+                </div>
+              </div>
+            </div>
+          }
+          
+          @default {
+            <div class="dashboard-cards">
+              <div class="card">
+                <h3>Welcome to Admin Console</h3>
+                <p>Select a section from the sidebar to get started.</p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    }
+  </main>
+</div>
