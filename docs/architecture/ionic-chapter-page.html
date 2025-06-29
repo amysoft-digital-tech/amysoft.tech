@@ -1,0 +1,172 @@
+<!-- src/app/pages/chapter/chapter.page.html -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="chapter">{{ chapter.title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="copyToClipboard(chapter?.content || '')">
+        <ion-icon name="copy-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <!-- Progress bar -->
+  <ion-progress-bar 
+    [value]="getProgressPercentage() / 100" 
+    color="primary">
+  </ion-progress-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ chapter?.title }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="chapter-container" *ngIf="chapter">
+    <!-- Chapter Header -->
+    <div class="chapter-header">
+      <div class="tier-badge" [class]="'tier-' + chapter.tier.name">
+        {{ chapter.tier.name | titlecase }}
+      </div>
+      
+      <h1>{{ chapter.title }}</h1>
+      
+      <p class="subtitle" *ngIf="chapter.subtitle">
+        {{ chapter.subtitle }}
+      </p>
+      
+      <div class="chapter-meta">
+        <div class="meta-item">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ chapter.estimatedReadTime }} min read</span>
+        </div>
+        
+        <div class="meta-item">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <span>{{ chapter.wordCount | number }} words</span>
+        </div>
+        
+        <div class="meta-item" *ngIf="chapter._count?.templates">
+          <ion-icon name="code-outline"></ion-icon>
+          <span>{{ chapter._count.templates }} templates</span>
+        </div>
+      </div>
+      
+      <div class="tags" *ngIf="chapter.tags.length">
+        <ion-chip 
+          *ngFor="let tag of chapter.tags"
+          [style.background-color]="tag.color"
+          outline>
+          {{ tag.name }}
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <ion-card *ngIf="sections.length > 0">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="list-outline"></ion-icon>
+          Table of Contents
+        </ion-card-title>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-list>
+          <ion-item 
+            *ngFor="let section of sections"
+            button 
+            (click)="navigateToSection(section.slug)">
+            <ion-label>{{ section.title }}</ion-label>
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Main Content -->
+    <div class="chapter-content">
+      <div [innerHTML]="chapter.content | markdown"></div>
+    </div>
+
+    <!-- Chapter Sections -->
+    <div class="chapter-sections" *ngIf="sections.length > 0">
+      <div 
+        *ngFor="let section of sections" 
+        class="section"
+        [id]="section.slug">
+        <h2>{{ section.title }}</h2>
+        <div [innerHTML]="section.content | markdown"></div>
+      </div>
+    </div>
+
+    <!-- Related Templates -->
+    <ion-card *ngIf="chapter._count?.templates && chapter._count.templates > 0">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="code-outline"></ion-icon>
+          Prompt Templates
+        </ion-card-title>
+        <ion-card-subtitle>
+          {{ chapter._count.templates }} templates for this chapter
+        </ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-button 
+          fill="outline" 
+          expand="block"
+          [routerLink]="['/templates']" 
+          [queryParams]="{ chapter: chapter.slug }">
+          View Templates
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Case Studies -->
+    <ion-card *ngIf="chapter._count?.caseStudies && chapter._count.caseStudies > 0">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="business-outline"></ion-icon>
+          Case Studies
+        </ion-card-title>
+        <ion-card-subtitle>
+          Real-world applications and results
+        </ion-card-subtitle>
+      </ion-card-header>
+      
+      <ion-card-content>
+        <ion-button 
+          fill="outline" 
+          expand="block"
+          [routerLink]="['/case-studies']" 
+          [queryParams]="{ chapter: chapter.slug }">
+          View Case Studies
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Navigation -->
+    <div class="chapter-navigation">
+      <ion-button 
+        fill="clear" 
+        expand="block"
+        [routerLink]="['/']">
+        <ion-icon name="home-outline" slot="start"></ion-icon>
+        Back to Chapters
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <ion-spinner name="circular"></ion-spinner>
+    <p>Loading chapter content...</p>
+  </div>
+</ion-content>

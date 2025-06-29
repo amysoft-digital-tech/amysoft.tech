@@ -1,0 +1,256 @@
+// Prisma Schema for amysoftai-content migration
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Content hierarchy models
+model ContentTier {
+  id          String    @id @default(cuid())
+  name        String    @unique // "foundation", "advanced", "elite"
+  price       Decimal   @db.Decimal(6,2)
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  chapters    Chapter[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@map("content_tiers")
+}
+
+model Chapter {
+  id              String           @id @default(cuid())
+  slug            String           @unique // "ch01-ai-betrayal"
+  title           String
+  subtitle        String?
+  description     String?
+  content         String           // Main markdown content
+  wordCount       Int              @default(0)
+  estimatedReadTime Int           @default(0) // in minutes
+  sortOrder       Int              @default(0)
+  isPublished     Boolean          @default(false)
+  
+  // Relationships
+  tierId          String
+  tier            ContentTier      @relation(fields: [tierId], references: [id])
+  sections        ChapterSection[]
+  templates       PromptTemplate[]
+  caseStudies     CaseStudy[]
+  assets          Asset[]
+  metadata        ChapterMetadata?
+  
+  // SEO and Discovery
+  tags            Tag[]
+  
+  // Tracking
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  publishedAt     DateTime?
+  
+  @@map("chapters")
+}
+
+model ChapterSection {
+  id          String  @id @default(cuid())
+  slug        String  // "problem-identification", "implementation-guide"
+  title       String
+  content     String  // Markdown content
+  sortOrder   Int     @default(0)
+  
+  // Relationships
+  chapterId   String
+  chapter     Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([chapterId, slug])
+  @@map("chapter_sections")
+}
+
+model ChapterMetadata {
+  id                String  @id @default(cuid())
+  completionStatus  String  @default("draft") // "draft", "review", "complete"
+  technicalAccuracy Boolean @default(false)
+  qualityScore      Int?    @db.SmallInt
+  lastReviewDate    DateTime?
+  reviewNotes       String?
+  
+  // SEO metadata
+  metaTitle         String?
+  metaDescription   String?
+  canonicalUrl      String?
+  
+  chapterId         String  @unique
+  chapter           Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("chapter_metadata")
+}
+
+// Prompt Templates System
+model PromptTemplate {
+  id              String              @id @default(cuid())
+  slug            String              @unique
+  title           String
+  description     String?
+  template        String              // The actual prompt template with placeholders
+  category        String              // "context-mastery", "dynamic-planning", etc
+  difficulty      String              @default("beginner") // "beginner", "intermediate", "advanced"
+  usageContext    String?
+  expectedOutcome String?
+  customizationGuide String?
+  
+  // Effectiveness tracking
+  effectivenessScore Int?             @db.SmallInt
+  usageCount         Int              @default(0)
+  successRate        Decimal?         @db.Decimal(5,2)
+  
+  // Relationships
+  chapterId       String?
+  chapter         Chapter?            @relation(fields: [chapterId], references: [id])
+  variables       TemplateVariable[]
+  examples        TemplateExample[]
+  tags            Tag[]
+  
+  // Metadata
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  @@map("prompt_templates")
+}
+
+model TemplateVariable {
+  id              String         @id @default(cuid())
+  name            String         // "PROJECT_CONTEXT", "REQUIREMENTS"
+  description     String?
+  dataType        String         @default("string") // "string", "number", "boolean", "array"
+  isRequired      Boolean        @default(true)
+  defaultValue    String?
+  validationRules Json?          // JSON schema for validation
+  
+  templateId      String
+  template        PromptTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  @@unique([templateId, name])
+  @@map("template_variables")
+}
+
+model TemplateExample {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  input       Json           // Example input variables
+  output      String         // Expected output
+  
+  templateId  String
+  template    PromptTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime       @default(now())
+  
+  @@map("template_examples")
+}
+
+// Case Studies
+model CaseStudy {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  description     String?
+  content         String   // Full case study content
+  industry        String?
+  companySize     String?  // "startup", "medium", "enterprise"
+  
+  // Metrics and outcomes
+  beforeMetrics   Json?    // JSON object with before metrics
+  afterMetrics    Json?    // JSON object with after metrics
+  improvementPercentage Decimal? @db.Decimal(5,2)
+  timeframeWeeks  Int?
+  
+  // Relationships
+  chapterId       String?
+  chapter         Chapter? @relation(fields: [chapterId], references: [id])
+  tags            Tag[]
+  
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("case_studies")
+}
+
+// Assets and Media
+model Asset {
+  id          String      @id @default(cuid())
+  filename    String
+  originalName String
+  path        String      // Storage path
+  url         String?     // CDN or public URL
+  mimeType    String
+  size        Int         // File size in bytes
+  assetType   AssetType   @default(IMAGE)
+  
+  // Metadata
+  alt         String?     // Alt text for accessibility
+  caption     String?
+  metadata    Json?       // Additional metadata (dimensions, etc.)
+  
+  // Relationships
+  chapterId   String?
+  chapter     Chapter?    @relation(fields: [chapterId], references: [id])
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("assets")
+}
+
+enum AssetType {
+  IMAGE
+  DIAGRAM
+  INTERACTIVE
+  DOCUMENT
+  VIDEO
+  AUDIO
+}
+
+// Tagging system
+model Tag {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  category    String?          // "principle", "technology", "difficulty", etc
+  color       String?          // Hex color for UI
+  
+  // Relationships
+  chapters    Chapter[]
+  templates   PromptTemplate[]
+  caseStudies CaseStudy[]
+  
+  createdAt   DateTime         @default(now())
+  
+  @@map("tags")
+}
+
+// Migration tracking
+model MigrationLog {
+  id              String   @id @default(cuid())
+  contentType     String   // "chapter", "template", "asset", etc
+  sourceFile      String   // Original file path from GitHub
+  targetId        String?  // ID of created record
+  status          String   // "success", "failed", "skipped"
+  errorMessage    String?
+  metadata        Json?    // Additional migration metadata
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("migration_logs")
+}
