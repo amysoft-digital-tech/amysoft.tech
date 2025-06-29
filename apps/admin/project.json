@@ -63,6 +63,32 @@
       "options": {
         "port": 4201
       }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/admin/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/admin/**/*.ts", "apps/admin/**/*.html"]
+      }
+    },
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/admin/cypress.config.ts",
+        "devServerTarget": "admin:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "admin:serve:production"
+        }
+      }
     }
   }
 }
