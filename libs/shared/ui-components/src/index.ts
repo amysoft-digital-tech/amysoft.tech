@@ -5,6 +5,14 @@ export * from './lib/components/button/button.component';
 export * from './lib/components/card/card.component';
 export * from './lib/components/input/input.component';
 
+// Layout Components (Issue #7)
+export * from './lib/layout/header/header.component';
+export * from './lib/layout/footer/footer.component';
+export * from './lib/layout/page-layout/page-layout.component';
+
+// Services (Issue #7)
+export * from './lib/services/accessibility.service';
+
 // Marketing Components (Issue #76)
 export * from './lib/components/lead-capture/lead-capture-form.component';
 export * from './lib/components/pricing/pricing-comparison.component';
