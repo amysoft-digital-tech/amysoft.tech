@@ -1,7 +1,21 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, BehaviorSubject, of, timer, throwError } from 'rxjs';
+import { map, catchError, tap, retry, retryWhen, delayWhen, take, shareReplay, filter, switchMap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+
+export interface ContentTier {
+  id: string;
+  name: string;
+  displayName: string;
+  price: number;
+  description: string;
+  features: string[];
+  chapterAccess: number[];
+  sortOrder: number;
+  isActive: boolean;
+  popular?: boolean;
+}
 
 export interface ContentChapter {
   id: string;
@@ -11,6 +25,7 @@ export interface ContentChapter {
   slug: string;
   description: string;
   content: string;
+  wordCount: number;
   estimatedReadTime: number;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   tags: string[];
@@ -22,9 +37,33 @@ export interface ContentChapter {
   keyTakeaways: string[];
   nextChapter?: string;
   previousChapter?: string;
+  tier: ContentTier;
   published: boolean;
+  assets?: ChapterAsset[];
+  metadata?: ChapterMetadata;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ChapterAsset {
+  id: string;
+  type: 'image' | 'video' | 'audio' | 'document' | 'interactive';
+  url: string;
+  title: string;
+  description?: string;
+  altText?: string;
+  caption?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ChapterMetadata {
+  seoTitle?: string;
+  seoDescription?: string;
+  socialImage?: string;
+  author?: string;
+  lastReviewed?: Date;
+  version?: string;
+  changeLog?: string[];
 }
 
 export interface ContentSection {
@@ -124,19 +163,93 @@ export interface ContentSearchResult {
   highlights: string[];
 }
 
+export interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  expires: number;
+}
+
+export interface ConnectionStatus {
+  online: boolean;
+  connectionType?: string;
+  effectiveType?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ContentService {
-  private readonly apiUrl = '/api/content';
+  private readonly apiUrl = environment.apiUrl || '/api/content';
+  private readonly cachePrefix = 'content_cache_';
+  private readonly cacheDuration = {
+    chapters: 1000 * 60 * 30,      // 30 minutes
+    templates: 1000 * 60 * 60,     // 1 hour
+    progress: 1000 * 60 * 5,       // 5 minutes
+    search: 1000 * 60 * 10,        // 10 minutes
+    tiers: 1000 * 60 * 60 * 24     // 24 hours
+  };
+
+  // State management with BehaviorSubjects
   private chaptersSubject = new BehaviorSubject<ContentChapter[]>([]);
+  private tiersSubject = new BehaviorSubject<ContentTier[]>([]);
   private userProgressSubject = new BehaviorSubject<UserProgress[]>([]);
+  private connectionStatusSubject = new BehaviorSubject<ConnectionStatus>({ online: navigator.onLine });
+  private loadingStatesSubject = new BehaviorSubject<Record<string, boolean>>({});
   
+  // Public observables
   public chapters$ = this.chaptersSubject.asObservable();
+  public tiers$ = this.tiersSubject.asObservable();
   public userProgress$ = this.userProgressSubject.asObservable();
+  public connectionStatus$ = this.connectionStatusSubject.asObservable();
+  public loadingStates$ = this.loadingStatesSubject.asObservable();
+
+  // Cached observables for performance
+  private chaptersCache$ = this.getAllChapters().pipe(shareReplay(1));
+  private tiersCache$ = this.getContentTiers().pipe(shareReplay(1));
 
   constructor(private http: HttpClient) {
-    this.loadFoundationContent();
+    this.initializeService();
+    this.setupConnectionMonitoring();
+    this.loadInitialContent();
+  }
+
+  private initializeService(): void {
+    // Load cached data on startup
+    this.loadCachedData();
+    
+    // Setup background sync for offline changes
+    this.setupBackgroundSync();
+    
+    // Initialize service worker communication
+    this.setupServiceWorkerCommunication();
+  }
+
+  private setupConnectionMonitoring(): void {
+    // Monitor online/offline status
+    window.addEventListener('online', () => {
+      this.connectionStatusSubject.next({ online: true });
+      this.syncOfflineChanges();
+    });
+    
+    window.addEventListener('offline', () => {
+      this.connectionStatusSubject.next({ online: false });
+    });
+
+    // Monitor connection quality if available
+    if ('connection' in navigator) {
+      const connection = (navigator as any).connection;
+      this.connectionStatusSubject.next({
+        online: navigator.onLine,
+        connectionType: connection.type,
+        effectiveType: connection.effectiveType
+      });
+    }
+  }
+
+  private loadInitialContent(): void {
+    // Load essential content on startup
+    this.getContentTiers().subscribe();
+    this.getAllChapters().subscribe();
   }
 
   // Content Loading
@@ -445,5 +558,277 @@ export class ContentService {
     const regex = new RegExp(`(${query})`, 'gi');
     const matches = text.match(regex);
     return matches ? matches.slice(0, 3) : [];
+  }
+
+  // Cache Management
+  clearCache(): void {
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith(this.cachePrefix)) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    // Reset subjects to initial state
+    this.chaptersSubject.next([]);
+    this.tiersSubject.next([]);
+    this.userProgressSubject.next([]);
+    this.loadingStatesSubject.next({});
+  }
+
+  refreshContent(): Observable<boolean> {
+    this.clearCache();
+    return new Observable(observer => {
+      Promise.all([
+        this.getContentTiers().toPromise(),
+        this.getAllChapters().toPromise()
+      ]).then(() => {
+        observer.next(true);
+        observer.complete();
+      }).catch(error => {
+        observer.error(error);
+      });
+    });
+  }
+
+  // Analytics and Performance
+  getAnalytics(): {
+    cacheStats: {
+      totalEntries: number;
+      sizeKB: number;
+      oldestEntry: Date | null;
+      newestEntry: Date | null;
+    };
+    performanceStats: {
+      averageLoadTime: number;
+      cacheHitRate: number;
+      offlineUsage: number;
+    };
+    contentStats: {
+      totalChapters: number;
+      completedChapters: number;
+      templatesUsed: number;
+      searchQueries: number;
+    };
+  } {
+    const cacheKeys = Object.keys(localStorage).filter(key => key.startsWith(this.cachePrefix));
+    let totalSize = 0;
+    let oldestEntry: Date | null = null;
+    let newestEntry: Date | null = null;
+
+    cacheKeys.forEach(key => {
+      const data = localStorage.getItem(key);
+      if (data) {
+        totalSize += data.length;
+        try {
+          const parsed = JSON.parse(data);
+          const timestamp = new Date(parsed.timestamp);
+          if (!oldestEntry || timestamp < oldestEntry) {
+            oldestEntry = timestamp;
+          }
+          if (!newestEntry || timestamp > newestEntry) {
+            newestEntry = timestamp;
+          }
+        } catch (e) {
+          // Invalid cache entry
+        }
+      }
+    });
+
+    const currentProgress = this.userProgressSubject.value;
+    const totalChapters = this.chaptersSubject.value.length;
+    const completedChapters = currentProgress.filter(p => p.completed).length;
+
+    return {
+      cacheStats: {
+        totalEntries: cacheKeys.length,
+        sizeKB: Math.round(totalSize / 1024),
+        oldestEntry,
+        newestEntry
+      },
+      performanceStats: {
+        averageLoadTime: 0, // Would be tracked in real implementation
+        cacheHitRate: 0.85, // Mock data
+        offlineUsage: 0.15 // Mock data
+      },
+      contentStats: {
+        totalChapters,
+        completedChapters,
+        templatesUsed: currentProgress.reduce((sum, p) => sum + p.templatesUsed.length, 0),
+        searchQueries: 0 // Would be tracked in real implementation
+      }
+    };
+  }
+
+  // Content Tiers
+  getContentTiers(): Observable<ContentTier[]> {
+    const cacheKey = `${this.cachePrefix}tiers`;
+    const cached = this.getCachedData<ContentTier[]>(cacheKey);
+    
+    if (cached) {
+      this.tiersSubject.next(cached);
+      return of(cached);
+    }
+
+    return this.http.get<ContentTier[]>(`${this.apiUrl}/tiers`).pipe(
+      tap(tiers => {
+        this.setCachedData(cacheKey, tiers, this.cacheDuration.tiers);
+        this.tiersSubject.next(tiers);
+      }),
+      catchError(() => of(this.getOfflineTiers())),
+      shareReplay(1)
+    );
+  }
+
+  private getOfflineTiers(): ContentTier[] {
+    return [
+      {
+        id: 'foundation',
+        name: 'foundation',
+        displayName: 'Foundation',
+        price: 24.95,
+        description: 'Essential AI principles and core concepts',
+        features: [
+          'Core AI principles',
+          'Basic prompt engineering',
+          'Foundation concepts',
+          'Getting started guide'
+        ],
+        chapterAccess: [1, 2, 3, 4, 5],
+        sortOrder: 1,
+        isActive: true,
+        popular: false
+      },
+      {
+        id: 'advanced',
+        name: 'advanced',
+        displayName: 'Advanced',
+        price: 97.00,
+        description: 'Advanced techniques and professional strategies',
+        features: [
+          'Advanced prompt strategies',
+          'AI workflow optimization',
+          'Professional templates',
+          'Case studies',
+          'Expert techniques'
+        ],
+        chapterAccess: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        sortOrder: 2,
+        isActive: true,
+        popular: true
+      },
+      {
+        id: 'elite',
+        name: 'elite',
+        displayName: 'Elite',
+        price: 297.00,
+        description: 'Complete mastery with exclusive content and tools',
+        features: [
+          'Complete content library',
+          'Exclusive templates',
+          'Advanced tools',
+          'Priority support',
+          'Mastermind access',
+          'Custom consulting'
+        ],
+        chapterAccess: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        sortOrder: 3,
+        isActive: true,
+        popular: false
+      }
+    ];
+  }
+
+  // Helper methods for cache management
+  private getCachedData<T>(key: string): T | null {
+    try {
+      const cached = localStorage.getItem(key);
+      if (!cached) return null;
+
+      const entry: CacheEntry<T> = JSON.parse(cached);
+      if (Date.now() > entry.expires) {
+        localStorage.removeItem(key);
+        return null;
+      }
+
+      return entry.data;
+    } catch (error) {
+      localStorage.removeItem(key);
+      return null;
+    }
+  }
+
+  private setCachedData<T>(key: string, data: T, duration: number): void {
+    try {
+      const entry: CacheEntry<T> = {
+        data,
+        timestamp: Date.now(),
+        expires: Date.now() + duration
+      };
+      localStorage.setItem(key, JSON.stringify(entry));
+    } catch (error) {
+      // Storage quota exceeded or other error
+      console.warn('Failed to cache data:', error);
+    }
+  }
+
+  private loadCachedData(): void {
+    // Load cached chapters
+    const cachedChapters = this.getCachedData<ContentChapter[]>(`${this.cachePrefix}chapters`);
+    if (cachedChapters) {
+      this.chaptersSubject.next(cachedChapters);
+    }
+
+    // Load cached tiers
+    const cachedTiers = this.getCachedData<ContentTier[]>(`${this.cachePrefix}tiers`);
+    if (cachedTiers) {
+      this.tiersSubject.next(cachedTiers);
+    }
+  }
+
+  private setupBackgroundSync(): void {
+    // Setup service worker background sync for offline changes
+    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+      navigator.serviceWorker.ready.then(registration => {
+        // Register background sync for progress updates
+        return registration.sync.register('background-sync-progress');
+      }).catch(error => {
+        console.log('Background sync not supported:', error);
+      });
+    }
+  }
+
+  private setupServiceWorkerCommunication(): void {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data.type === 'CACHE_UPDATED') {
+          // Refresh data when service worker updates cache
+          this.loadCachedData();
+        }
+      });
+    }
+  }
+
+  private syncOfflineChanges(): void {
+    // Sync any offline changes when coming back online
+    const offlineQueue = localStorage.getItem('offline_queue');
+    if (offlineQueue) {
+      try {
+        const changes = JSON.parse(offlineQueue);
+        changes.forEach((change: any) => {
+          // Process offline changes based on type
+          switch (change.type) {
+            case 'progress_update':
+              this.updateProgress(change.userId, change.chapterId, change.data).subscribe();
+              break;
+            case 'bookmark_toggle':
+              this.toggleBookmark(change.userId, change.chapterId).subscribe();
+              break;
+          }
+        });
+        localStorage.removeItem('offline_queue');
+      } catch (error) {
+        console.error('Failed to sync offline changes:', error);
+      }
+    }
   }
 }
